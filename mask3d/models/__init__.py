@@ -20,7 +20,7 @@ def add_models(module):
 
 add_models(resunet)
 add_models(res16unet)
-add_models(mask3d)
+add_models(Mask3D)
 
 
 def get_models():
