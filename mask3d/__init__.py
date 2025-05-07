@@ -29,7 +29,7 @@ import numpy as np
 import open3d as o3d
 
 # imports for output
-from datasets.scannet200.scannet200_constants import (VALID_CLASS_IDS_20, VALID_CLASS_IDS_200, SCANNET_COLOR_MAP_20, SCANNET_COLOR_MAP_200)
+from mask3d.datasets.scannet200.scannet200_constants import (VALID_CLASS_IDS_20, VALID_CLASS_IDS_200, SCANNET_COLOR_MAP_20, SCANNET_COLOR_MAP_200)
 
 def get_model(checkpoint_path=None):
 
@@ -120,7 +120,7 @@ def prepare_data(mesh, device):
     colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
 
     coords = np.floor(points / 0.02)
-    _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
+    _, _, unique_map, inverse_map =ME.utils.sparse_quantize(
         coordinates=coords,
         features=colors,
         return_index=True,
@@ -160,7 +160,7 @@ def map_output_to_pointcloud(mesh,
 
     labels = []
     confidences = []
-    masks_binary = []
+    instance_masks = []
 
     for i in range(len(logits)):
         p_labels = torch.softmax(logits[i], dim=-1)
@@ -173,8 +173,7 @@ def map_output_to_pointcloud(mesh,
         if l < 200 and c > confidence_threshold:
             labels.append(l.item())
             confidences.append(c.item())
-            masks_binary.append(
-                m[inverse_map])  # mapping the mask back to the original point cloud
+            instance_masks.append(m[inverse_map])  # mapping the mask back to the original point cloud
     
     # save labelled mesh
     mesh_labelled = o3d.geometry.TriangleMesh()
@@ -183,8 +182,10 @@ def map_output_to_pointcloud(mesh,
 
     labels_mapped = np.zeros((len(mesh.vertices), 1))
 
+    instance_id = 1  # Starting instance ID
+
     for i, (l, c, m) in enumerate(
-        sorted(zip(labels, confidences, masks_binary), reverse=False)):
+        sorted(zip(labels, confidences, instance_masks), reverse=False)):
         
         if label_space == 'scannet200':
             label_offset = 2
@@ -193,26 +194,28 @@ def map_output_to_pointcloud(mesh,
             else:
                 l = int(l) + label_offset
                         
-        labels_mapped[m == 1] = l
+        labels_mapped[m == 1] = instance_id
+        instance_id += 1
         
     return labels_mapped
 
 def save_colorized_mesh(mesh, labels_mapped, output_file, colormap='scannet'):
     
-    # colorize mesh
-    colors = np.zeros((len(mesh.vertices), 3))
-    for li in np.unique(labels_mapped):
-        if colormap == 'scannet':
-            raise ValueError('Not implemented yet')
-        elif colormap == 'scannet200':
-            v_li = VALID_CLASS_IDS_200[int(li)]
-            colors[(labels_mapped == li)[:, 0], :] = SCANNET_COLOR_MAP_200[v_li]
-        else:
-            raise ValueError('Unknown colormap - not supported')
+    # Generate unique colors for each instance
+    unique_labels = np.unique(labels_mapped)
+    np.random.seed(42)  # For reproducibility
+    colors = np.random.rand(len(unique_labels), 3)
     
-    colors = colors / 255.
-    mesh.vertex_colors = o3d.utility.Vector3dVector(colors)
+    # Map colors to the mesh
+    vertex_colors = np.zeros((len(mesh.vertices), 3))
+    for i, label in enumerate(unique_labels):
+        if label != 0:  # Skip background
+            vertex_colors[labels_mapped[:, 0] == label] = colors[i]
+    
+    mesh.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
     o3d.io.write_triangle_mesh(output_file, mesh)
+
+
 
 if __name__ == '__main__':
     
