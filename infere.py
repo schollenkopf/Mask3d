@@ -1,3 +1,4 @@
+print("imports")
 from mask3d import (
     get_model,
     load_mesh,
