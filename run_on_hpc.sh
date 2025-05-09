@@ -61,6 +61,6 @@ cd ../../
 #pip install .
 
 #pip install typing_extensions==4.11.0
-#python infere.py
-cd mask3d
-python main_instance_segmentation.py   general.checkpoint='../checkpoints/scannet_pretrained.ckpt'
+python infere.py
+#cd mask3d
+#python main_instance_segmentation.py   general.checkpoint='../checkpoints/scannet_pretrained.ckpt'
