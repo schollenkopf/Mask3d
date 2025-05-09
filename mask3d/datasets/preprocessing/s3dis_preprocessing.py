@@ -15,8 +15,12 @@ class S3DISPreprocessing(BasePreprocessing):
         data_dir: str = "./data/raw/s3dis",
         save_dir: str = "./data/processed/s3dis",
         modes: tuple = (
-            "Train",
-            "Test",
+            "Area_1",
+            "Area_2",
+            "Area_3",
+            "Area_4",
+            "Area_5",
+            "Area_6",
         ),
         n_jobs: int = -1,
     ):
