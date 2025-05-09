@@ -13,7 +13,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 # load input data
-pointcloud_file = "scans/1717333121226735.ply"
+pointcloud_file = "scans/1717333010226698.ply "
 mesh = load_mesh(pointcloud_file)
 
 # prepare data
@@ -27,6 +27,4 @@ with torch.no_grad():
 labels = map_output_to_pointcloud(mesh, outputs, inverse_map)
 
 # save colorized mesh
-save_colorized_mesh(
-    mesh, labels, "scans/1717333121226735_labeled.ply", colormap="scannet200"
-)
+save_colorized_mesh(mesh, labels, "scans/labeled.ply", colormap="scannet200")
