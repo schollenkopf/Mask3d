@@ -1,12 +1,19 @@
-from mask3d import get_model, load_mesh, prepare_data, map_output_to_pointcloud, save_colorized_mesh 
+from mask3d import (
+    get_model,
+    load_mesh,
+    prepare_data,
+    map_output_to_pointcloud,
+    save_colorized_mesh,
+)
 import torch
-model = get_model('checkpoints/scannet200_val.ckpt')
+
+model = get_model("checkpoints/area4_from_scratch.ckpt", "s3dis")
 model.eval()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 # load input data
-pointcloud_file = 'scans/1717333121226735.ply'
+pointcloud_file = "scans/1717333121226735.ply"
 mesh = load_mesh(pointcloud_file)
 
 # prepare data
@@ -15,9 +22,11 @@ data, points, colors, features, unique_map, inverse_map = prepare_data(mesh, dev
 # run model
 with torch.no_grad():
     outputs = model(data, raw_coordinates=features)
-    
+
 # map output to point cloud
 labels = map_output_to_pointcloud(mesh, outputs, inverse_map)
 
 # save colorized mesh
-save_colorized_mesh(mesh, labels, 'scans/1717333121226735_labeled.ply', colormap='scannet200')
+save_colorized_mesh(
+    mesh, labels, "scans/1717333121226735_labeled.ply", colormap="scannet200"
+)
