@@ -15,12 +15,8 @@ class S3DISPreprocessing(BasePreprocessing):
         data_dir: str = "./data/raw/s3dis",
         save_dir: str = "./data/processed/s3dis",
         modes: tuple = (
-            "Area_1",
-            "Area_2",
-            "Area_3",
-            "Area_4",
-            "Area_5",
-            "Area_6",
+            "Train",
+            "Test",
         ),
         n_jobs: int = -1,
     ):
@@ -29,16 +25,16 @@ class S3DISPreprocessing(BasePreprocessing):
         self.class_map = {
             "ceiling": 0,
             "floor": 1,
-            "wall": 2,
+            "wall": 2,  # cylinder
             "beam": 3,
-            "column": 4,
+            "column": 4,  # cable
             "window": 5,
             "door": 6,
             "table": 7,
             "chair": 8,
             "sofa": 9,
             "bookcase": 10,
-            "board": 11,
+            "board": 11,  # ladder
             "clutter": 12,
             "stairs": 12,  # stairs are also mapped to clutter
         }
@@ -118,21 +114,19 @@ class S3DISPreprocessing(BasePreprocessing):
         scene_points = []
         for instance in [
             f
-            for f in os.scandir(
-                self.data_dir / mode / scene_name / "Annotations"
-            )
+            for f in os.scandir(self.data_dir / mode / scene_name / "Annotations")
             if f.name.endswith(".txt")
         ]:
             instance_class = self.class_map[instance.name.split("_")[0]]
             instance_points = np.loadtxt(instance.path)
 
             instance_normals = np.ones((instance_points.shape[0], 3))
-            instance_class = np.array(instance_class).repeat(
-                instance_points.shape[0]
-            )[..., None]
-            instance_id = np.array(instance_counter).repeat(
-                instance_points.shape[0]
-            )[..., None]
+            instance_class = np.array(instance_class).repeat(instance_points.shape[0])[
+                ..., None
+            ]
+            instance_id = np.array(instance_counter).repeat(instance_points.shape[0])[
+                ..., None
+            ]
 
             instance_points = np.hstack(
                 (
@@ -157,9 +151,7 @@ class S3DISPreprocessing(BasePreprocessing):
 
         # add segment id as additional feature (DUMMY)
         points = np.hstack((points, np.ones(points.shape[0])[..., None]))
-        points[:, [9, 10, -1]] = points[
-            :, [-1, 9, 10]
-        ]  # move segments after RGB
+        points[:, [9, 10, -1]] = points[:, [-1, 9, 10]]  # move segments after RGB
 
         gt_data = (points[:, -2] + 1) * 1000 + points[:, -1] + 1
 
@@ -207,9 +199,7 @@ class S3DISPreprocessing(BasePreprocessing):
                 color_mean.append(sample["color_mean"])
 
             color_mean = np.array(color_mean).mean(axis=0)
-            color_std = np.sqrt(
-                np.array(color_std).mean(axis=0) - color_mean**2
-            )
+            color_std = np.sqrt(np.array(color_std).mean(axis=0) - color_mean**2)
             feats_mean_std = {
                 "mean": [float(each) for each in color_mean],
                 "std": [float(each) for each in color_std],
@@ -231,9 +221,7 @@ class S3DISPreprocessing(BasePreprocessing):
                     all_mean.append(sample["color_mean"])
 
             all_color_mean = np.array(all_mean).mean(axis=0)
-            all_color_std = np.sqrt(
-                np.array(all_std).mean(axis=0) - all_color_mean**2
-            )
+            all_color_std = np.sqrt(np.array(all_std).mean(axis=0) - all_color_mean**2)
             feats_mean_std = {
                 "mean": [float(each) for each in all_color_mean],
                 "std": [float(each) for each in all_color_std],
@@ -265,13 +253,9 @@ class S3DISPreprocessing(BasePreprocessing):
                 if mode == let_out:
                     continue
                 joint_db.extend(
-                    self._load_yaml(
-                        self.save_dir / (let_out + "_database.yaml")
-                    )
+                    self._load_yaml(self.save_dir / (let_out + "_database.yaml"))
                 )
-            self._save_yaml(
-                self.save_dir / f"train_{mode}_database.yaml", joint_db
-            )
+            self._save_yaml(self.save_dir / f"train_{mode}_database.yaml", joint_db)
 
     def _parse_scene_subscene(self, name):
         scene_match = re.match(r"scene(\d{4})_(\d{2})", name)
