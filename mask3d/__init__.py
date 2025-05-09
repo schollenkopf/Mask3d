@@ -183,6 +183,9 @@ def map_output_to_pointcloud(
         m = p_masks > 0.5
         c_m = p_masks[m].sum() / (m.sum() + 1e-8)
         c = c_label * c_m
+        print(i)
+        print(p_labels)
+        print(l)
         if l < 200 and c > confidence_threshold:
             labels.append(l.item())
             confidences.append(c.item())
