@@ -183,33 +183,29 @@ class SemanticSegmentationDataset(Dataset):
         self._data = []
         for database_path in self.data_dir:
             database_path = Path(database_path)
-            mode = "Validation"
-            print("lkujuhasdfijgashdf")
-            print(self.dataset_name)
             if self.dataset_name != "s3dis":
                 if not (database_path / f"{mode}_database.yaml").exists():
-                    print(f"gene1rate {database_path}/{mode}_database.yaml first")
+                    print(f"generate {database_path}/{mode}_database.yaml first")
                     exit()
                 self._data.extend(
                     self._load_yaml(database_path / f"{mode}_database.yaml")
                 )
             else:
                 mode_s3dis = f"Area_{self.area}"
-                # mode_s3dis = "Validation"
                 if self.mode == "train":
                     mode_s3dis = "train_" + mode_s3dis
                 if not (database_path / f"{mode_s3dis}_database.yaml").exists():
-                    print(f"genera2te {database_path}/{mode_s3dis}_database.yaml first")
+                    print(f"generate {database_path}/{mode_s3dis}_database.yaml first")
                     exit()
                 self._data.extend(
                     self._load_yaml(database_path / f"{mode_s3dis}_database.yaml")
                 )
         if data_percent < 1.0:
             self._data = sample(self._data, int(len(self._data) * data_percent))
-        # labels = self._load_yaml(Path(label_db_filepath))
+        labels = self._load_yaml(Path(label_db_filepath))
 
         # if working only on classes for validation - discard others
-        # self._labels = self._select_correct_labels(labels, num_labels)
+        self._labels = self._select_correct_labels(labels, num_labels)
 
         if instance_oversampling > 0:
             self.instance_data = self._load_yaml(
@@ -598,11 +594,11 @@ class SemanticSegmentationDataset(Dataset):
 
         # prepare labels and map from 0 to 20(40)
         labels = labels.astype(np.int32)
-        # if labels.size > 0:
-        #     labels[:, 0] = self._remap_from_zero(labels[:, 0])
-        #     if not self.add_instance:
-        #         # taking only first column, which is segmentation label, not instance
-        #         labels = labels[:, 0].flatten()[..., None]
+        if labels.size > 0:
+            labels[:, 0] = self._remap_from_zero(labels[:, 0])
+            if not self.add_instance:
+                # taking only first column, which is segmentation label, not instance
+                labels = labels[:, 0].flatten()[..., None]
 
         labels = np.hstack((labels, segments[..., None].astype(np.int32)))
 
