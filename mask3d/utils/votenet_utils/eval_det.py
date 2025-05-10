@@ -3,21 +3,21 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-""" Generic Code for Object Detection Evaluation
+"""Generic Code for Object Detection Evaluation
 
-    Input:
-    For each class:
-        For each image:
-            Predictions: box, score
-            Groundtruths: box
-    
-    Output:
-    For each class:
-        precision-recal and average precision
-    
-    Author: Charles R. Qi
-    
-    Ref: https://raw.githubusercontent.com/rbgirshick/py-faster-rcnn/master/lib/datasets/voc_eval.py
+Input:
+For each class:
+    For each image:
+        Predictions: box, score
+        Groundtruths: box
+
+Output:
+For each class:
+    precision-recal and average precision
+
+Author: Charles R. Qi
+
+Ref: https://raw.githubusercontent.com/rbgirshick/py-faster-rcnn/master/lib/datasets/voc_eval.py
 """
 import numpy as np
 
@@ -84,9 +84,7 @@ def get_iou_main(get_iou_func, args):
     return get_iou_func(*args)
 
 
-def eval_det_cls(
-    pred, gt, ovthresh=0.25, use_07_metric=False, get_iou_func=get_iou
-):
+def eval_det_cls(pred, gt, ovthresh=0.25, use_07_metric=False, get_iou_func=get_iou):
     """Generic functions to compute precision/recall for object detection
     for a single class.
     Input:
@@ -163,11 +161,15 @@ def eval_det_cls(
     # compute precision recall
     fp = np.cumsum(fp)
     tp = np.cumsum(tp)
-    rec = tp / float(npos)
+    rec = tp / float(npos) if npos > 0 else 0.0
+
     # print('NPOS: ', npos)
     # avoid divide by zero in case the first detection matches a difficult
     # ground truth
-    prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
+    if tp + fp == 0:
+        prec = 0.0  # or optionally: continue
+    else:
+        prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
     ap = voc_ap(rec, prec, use_07_metric)
 
     return rec, prec, ap
@@ -175,9 +177,7 @@ def eval_det_cls(
 
 def eval_det_cls_wrapper(arguments):
     pred, gt, ovthresh, use_07_metric, get_iou_func = arguments
-    rec, prec, ap = eval_det_cls(
-        pred, gt, ovthresh, use_07_metric, get_iou_func
-    )
+    rec, prec, ap = eval_det_cls(pred, gt, ovthresh, use_07_metric, get_iou_func)
     return (rec, prec, ap)
 
 
