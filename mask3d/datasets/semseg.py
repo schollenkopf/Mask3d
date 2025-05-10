@@ -183,37 +183,27 @@ class SemanticSegmentationDataset(Dataset):
         self._data = []
         for database_path in self.data_dir:
             database_path = Path(database_path)
-            mode = 'Validation'
+            mode = "Validation"
             if self.dataset_name != "s3dis":
                 if not (database_path / f"{mode}_database.yaml").exists():
-                    print(
-                        f"generate {database_path}/{mode}_database.yaml first"
-                    )
+                    print(f"generate {database_path}/{mode}_database.yaml first")
                     exit()
                 self._data.extend(
                     self._load_yaml(database_path / f"{mode}_database.yaml")
                 )
             else:
-                # mode_s3dis = f"Area_{self.area}"
-                mode_s3dis = "Validation"
+                mode_s3dis = f"Area_{self.area}"
+                # mode_s3dis = "Validation"
                 if self.mode == "train":
                     mode_s3dis = "train_" + mode_s3dis
-                if not (
-                    database_path / f"{mode_s3dis}_database.yaml"
-                ).exists():
-                    print(
-                        f"generate {database_path}/{mode_s3dis}_database.yaml first"
-                    )
+                if not (database_path / f"{mode_s3dis}_database.yaml").exists():
+                    print(f"generate {database_path}/{mode_s3dis}_database.yaml first")
                     exit()
                 self._data.extend(
-                    self._load_yaml(
-                        database_path / f"{mode_s3dis}_database.yaml"
-                    )
+                    self._load_yaml(database_path / f"{mode_s3dis}_database.yaml")
                 )
         if data_percent < 1.0:
-            self._data = sample(
-                self._data, int(len(self._data) * data_percent)
-            )
+            self._data = sample(self._data, int(len(self._data) * data_percent))
         # labels = self._load_yaml(Path(label_db_filepath))
 
         # if working only on classes for validation - discard others
@@ -239,9 +229,7 @@ class SemanticSegmentationDataset(Dataset):
         elif len(color_mean_std[0]) == 3 and len(color_mean_std[1]) == 3:
             color_mean, color_std = color_mean_std[0], color_mean_std[1]
         else:
-            logger.error(
-                "pass mean and std as tuple of tuples, or as an .yaml file"
-            )
+            logger.error("pass mean and std as tuple of tuples, or as an .yaml file")
 
         # augmentations
         self.volume_augmentations = V.NoOp()
@@ -278,16 +266,16 @@ class SemanticSegmentationDataset(Dataset):
                             if len(block) > 10000:
                                 new_data.append(
                                     {
-                                        "instance_gt_filepath": self._data[i][
-                                            "instance_gt_filepath"
-                                        ][block_id]
-                                        if len(
-                                            self._data[i][
-                                                "instance_gt_filepath"
+                                        "instance_gt_filepath": (
+                                            self._data[i]["instance_gt_filepath"][
+                                                block_id
                                             ]
-                                        )
-                                        > 0
-                                        else list(),
+                                            if len(
+                                                self._data[i]["instance_gt_filepath"]
+                                            )
+                                            > 0
+                                            else list()
+                                        ),
                                         "scene": f"{self._data[i]['scene'].replace('.txt', '')}_{block_id}.txt",
                                         "raw_filepath": f"{self.data[i]['filepath'].replace('.npy', '')}_{block_id}",
                                         "data": block,
@@ -309,16 +297,16 @@ class SemanticSegmentationDataset(Dataset):
                             if cond_inner.sum() > 10000:
                                 new_data.append(
                                     {
-                                        "instance_gt_filepath": self._data[i][
-                                            "instance_gt_filepath"
-                                        ][block_id]
-                                        if len(
-                                            self._data[i][
-                                                "instance_gt_filepath"
+                                        "instance_gt_filepath": (
+                                            self._data[i]["instance_gt_filepath"][
+                                                block_id
                                             ]
-                                        )
-                                        > 0
-                                        else list(),
+                                            if len(
+                                                self._data[i]["instance_gt_filepath"]
+                                            )
+                                            > 0
+                                            else list()
+                                        ),
                                         "scene": f"{self._data[i]['scene'].replace('.txt', '')}_{block_id}.txt",
                                         "raw_filepath": f"{self.data[i]['filepath'].replace('.npy', '')}_{block_id}",
                                         "data": block_outer,
@@ -339,12 +327,10 @@ class SemanticSegmentationDataset(Dataset):
             width = int(np.ceil((limitMax[0] - size) / stride)) + 1
             depth = int(np.ceil((limitMax[1] - size) / stride)) + 1
             cells = [
-                (x * stride, y * stride)
-                for x in range(width)
-                for y in range(depth)
+                (x * stride, y * stride) for x in range(width) for y in range(depth)
             ]
             blocks = []
-            for (x, y) in cells:
+            for x, y in cells:
                 xcond = (cloud[:, 0] <= x + size) & (cloud[:, 0] >= x)
                 ycond = (cloud[:, 1] <= y + size) & (cloud[:, 1] >= y)
                 cond = xcond & ycond
@@ -356,19 +342,17 @@ class SemanticSegmentationDataset(Dataset):
             width = int(np.ceil((limitMax[0] - inner_core) / stride)) + 1
             depth = int(np.ceil((limitMax[1] - inner_core) / stride)) + 1
             cells = [
-                (x * stride, y * stride)
-                for x in range(width)
-                for y in range(depth)
+                (x * stride, y * stride) for x in range(width) for y in range(depth)
             ]
             blocks_outer = []
             conds_inner = []
-            for (x, y) in cells:
-                xcond_outer = (
-                    cloud[:, 0] <= x + inner_core / 2.0 + size / 2
-                ) & (cloud[:, 0] >= x + inner_core / 2.0 - size / 2)
-                ycond_outer = (
-                    cloud[:, 1] <= y + inner_core / 2.0 + size / 2
-                ) & (cloud[:, 1] >= y + inner_core / 2.0 - size / 2)
+            for x, y in cells:
+                xcond_outer = (cloud[:, 0] <= x + inner_core / 2.0 + size / 2) & (
+                    cloud[:, 0] >= x + inner_core / 2.0 - size / 2
+                )
+                ycond_outer = (cloud[:, 1] <= y + inner_core / 2.0 + size / 2) & (
+                    cloud[:, 1] >= y + inner_core / 2.0 - size / 2
+                )
 
                 cond_outer = xcond_outer & ycond_outer
                 block_outer = cloud[cond_outer, :]
@@ -452,8 +436,7 @@ class SemanticSegmentationDataset(Dataset):
 
             try:
                 coordinates += (
-                    np.random.uniform(coordinates.min(0), coordinates.max(0))
-                    / 2
+                    np.random.uniform(coordinates.min(0), coordinates.max(0)) / 2
                 )
             except OverflowError as err:
                 print(coordinates)
@@ -501,9 +484,7 @@ class SemanticSegmentationDataset(Dataset):
                 aug["labels"],
             )
             pseudo_image = color.astype(np.uint8)[np.newaxis, :, :]
-            color = np.squeeze(
-                self.image_augmentations(image=pseudo_image)["image"]
-            )
+            color = np.squeeze(self.image_augmentations(image=pseudo_image)["image"])
 
             if self.point_per_cut != 0:
                 number_of_cuts = int(len(coordinates) / self.point_per_cut)
@@ -591,16 +572,12 @@ class SemanticSegmentationDataset(Dataset):
                         aug["normals"],
                         aug["labels"],
                     )
-                    pseudo_image = unlabeled_color.astype(np.uint8)[
-                        np.newaxis, :, :
-                    ]
+                    pseudo_image = unlabeled_color.astype(np.uint8)[np.newaxis, :, :]
                     unlabeled_color = np.squeeze(
                         self.image_augmentations(image=pseudo_image)["image"]
                     )
 
-                    coordinates = np.concatenate(
-                        (coordinates, unlabeled_coords)
-                    )
+                    coordinates = np.concatenate((coordinates, unlabeled_coords))
                     color = np.concatenate((color, unlabeled_color))
                     normals = np.concatenate((normals, unlabeled_normals))
                     labels = np.concatenate(
@@ -726,9 +703,7 @@ class SemanticSegmentationDataset(Dataset):
             raise ValueError(msg)
 
     def _remap_from_zero(self, labels):
-        labels[
-            ~np.isin(labels, list(self.label_info.keys()))
-        ] = self.ignore_label
+        labels[~np.isin(labels, list(self.label_info.keys()))] = self.ignore_label
         # remap to the range from 0
         for i, k in enumerate(self.label_info.keys()):
             labels[labels == k] = i
@@ -749,31 +724,21 @@ class SemanticSegmentationDataset(Dataset):
         for instance in range(0, int(max_instance * oversampling)):
             if self.place_around_existing:
                 center = choice(
-                    coordinates[
-                        labels[:, 1] == choice(np.unique(labels[:, 1]))
-                    ]
+                    coordinates[labels[:, 1] == choice(np.unique(labels[:, 1]))]
                 )
             else:
-                center = np.array(
-                    [uniform(-5, 5), uniform(-5, 5), uniform(-0.5, 2)]
-                )
+                center = np.array([uniform(-5, 5), uniform(-5, 5), uniform(-0.5, 2)])
             instance = choice(choice(self.instance_data))
             instance = np.load(instance["instance_filepath"])
             # centering two objects
-            instance[:, :3] = (
-                instance[:, :3] - instance[:, :3].mean(axis=0) + center
-            )
+            instance[:, :3] = instance[:, :3] - instance[:, :3].mean(axis=0) + center
             max_instance = max_instance + 1
             instance[:, -1] = max_instance
             aug = V.Compose(
                 [
                     V.Scale3d(),
-                    V.RotateAroundAxis3d(
-                        rotation_limit=np.pi / 24, axis=(1, 0, 0)
-                    ),
-                    V.RotateAroundAxis3d(
-                        rotation_limit=np.pi / 24, axis=(0, 1, 0)
-                    ),
+                    V.RotateAroundAxis3d(rotation_limit=np.pi / 24, axis=(1, 0, 0)),
+                    V.RotateAroundAxis3d(rotation_limit=np.pi / 24, axis=(0, 1, 0)),
                     V.RotateAroundAxis3d(rotation_limit=np.pi, axis=(0, 0, 1)),
                 ]
             )(
@@ -809,15 +774,9 @@ def elastic_distortion(pointcloud, granularity, magnitude):
 
     # Smoothing.
     for _ in range(2):
-        noise = scipy.ndimage.filters.convolve(
-            noise, blurx, mode="constant", cval=0
-        )
-        noise = scipy.ndimage.filters.convolve(
-            noise, blury, mode="constant", cval=0
-        )
-        noise = scipy.ndimage.filters.convolve(
-            noise, blurz, mode="constant", cval=0
-        )
+        noise = scipy.ndimage.filters.convolve(noise, blurx, mode="constant", cval=0)
+        noise = scipy.ndimage.filters.convolve(noise, blury, mode="constant", cval=0)
+        noise = scipy.ndimage.filters.convolve(noise, blurz, mode="constant", cval=0)
 
     # Trilinear interpolate noise filters for each spatial dimensions.
     ax = [
@@ -891,9 +850,7 @@ def flip_in_center(coordinates):
         minimum = coordinates[second_crop].min(0)
         minimum[2] = 0
         minimum[0] = 0
-        coordinates[second_crop] = aug(points=coordinates[second_crop])[
-            "points"
-        ]
+        coordinates[second_crop] = aug(points=coordinates[second_crop])["points"]
         coordinates[second_crop] += minimum
     if third_crop.size > 1:
         minimum = coordinates[third_crop].min(0)
@@ -904,9 +861,7 @@ def flip_in_center(coordinates):
     if fourth_crop.size > 1:
         minimum = coordinates[fourth_crop].min(0)
         minimum[2] = 0
-        coordinates[fourth_crop] = aug(points=coordinates[fourth_crop])[
-            "points"
-        ]
+        coordinates[fourth_crop] = aug(points=coordinates[fourth_crop])["points"]
         coordinates[fourth_crop] += minimum
 
     return coordinates
@@ -957,22 +912,14 @@ def random_points(
     max_boundary = coordinates.max(0) + 0.1
     min_boundary = coordinates.min(0) - 0.1
 
-    noisy_coordinates = int(
-        (max(max_boundary) - min(min_boundary)) / noise_rate
-    )
+    noisy_coordinates = int((max(max_boundary) - min(min_boundary)) / noise_rate)
 
     noisy_coordinates = np.array(
         list(
             product(
-                np.linspace(
-                    min_boundary[0], max_boundary[0], noisy_coordinates
-                ),
-                np.linspace(
-                    min_boundary[1], max_boundary[1], noisy_coordinates
-                ),
-                np.linspace(
-                    min_boundary[2], max_boundary[2], noisy_coordinates
-                ),
+                np.linspace(min_boundary[0], max_boundary[0], noisy_coordinates),
+                np.linspace(min_boundary[1], max_boundary[1], noisy_coordinates),
+                np.linspace(min_boundary[2], max_boundary[2], noisy_coordinates),
             )
         )
     )
@@ -982,9 +929,7 @@ def random_points(
 
     noisy_color = np.random.randint(0, 255, size=noisy_coordinates.shape)
     noisy_normals = np.random.rand(*noisy_coordinates.shape) * 2 - 1
-    noisy_labels = np.full(
-        (noisy_coordinates.shape[0], labels.shape[1]), ignore_label
-    )
+    noisy_labels = np.full((noisy_coordinates.shape[0], labels.shape[1]), ignore_label)
 
     coordinates = np.vstack((coordinates, noisy_coordinates))
     color = np.vstack((color, noisy_color))
