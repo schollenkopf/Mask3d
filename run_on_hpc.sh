@@ -58,7 +58,7 @@ cd third_party/pointnet2
 cd ../../
 #pip install pytorch-lightning==1.7.2
 
-#pip install .
+pip install .
 
 #pip install typing_extensions==4.11.0
 # python infere.py
