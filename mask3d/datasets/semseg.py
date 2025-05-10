@@ -184,6 +184,7 @@ class SemanticSegmentationDataset(Dataset):
         for database_path in self.data_dir:
             database_path = Path(database_path)
             mode = "Validation"
+            print(self.dataset_name)
             if self.dataset_name != "s3dis":
                 if not (database_path / f"{mode}_database.yaml").exists():
                     print(f"generate {database_path}/{mode}_database.yaml first")
