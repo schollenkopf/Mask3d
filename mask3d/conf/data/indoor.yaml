@@ -11,7 +11,7 @@ test_mode: validation # test  # validation
 # dataset
 ignore_label: 255
 add_raw_coordinates: true # 3dim
-add_colors: true # 3dim
+add_colors: false # 3dim
 add_normals: false # 3dim
 in_channels: 3 # in_channels = 3 * (add_normals + add_colors + add_raw_coordinates)
 num_labels: 20
