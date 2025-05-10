@@ -590,7 +590,8 @@ class SemanticSegmentationDataset(Dataset):
 
         # normalize color information
         pseudo_image = color.astype(np.uint8)[np.newaxis, :, :]
-        color = np.squeeze(self.normalize_color(image=pseudo_image)["image"])
+        if self.add_colors:
+            color = np.squeeze(self.normalize_color(image=pseudo_image)["image"])
 
         # prepare labels and map from 0 to 20(40)
         labels = labels.astype(np.int32)
