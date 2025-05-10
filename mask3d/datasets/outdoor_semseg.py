@@ -43,7 +43,7 @@ class LidarDataset(Dataset):
         for database_path in self.data_dir:
             database_path = Path(database_path)
             if not (database_path / f"{mode}_database.yaml").exists():
-                print(f"generate {database_path}/{mode}_database.yaml first")
+                print(f"generaadsfte {database_path}/{mode}_database.yaml first")
                 exit()
             self._data.extend(self._load_yaml(database_path / f"{mode}_database.yaml"))
 

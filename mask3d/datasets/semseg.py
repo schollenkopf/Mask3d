@@ -188,7 +188,7 @@ class SemanticSegmentationDataset(Dataset):
             print(self.dataset_name)
             if self.dataset_name != "s3dis":
                 if not (database_path / f"{mode}_database.yaml").exists():
-                    print(f"generate {database_path}/{mode}_database.yaml first")
+                    print(f"gene1rate {database_path}/{mode}_database.yaml first")
                     exit()
                 self._data.extend(
                     self._load_yaml(database_path / f"{mode}_database.yaml")
@@ -199,7 +199,7 @@ class SemanticSegmentationDataset(Dataset):
                 if self.mode == "train":
                     mode_s3dis = "train_" + mode_s3dis
                 if not (database_path / f"{mode_s3dis}_database.yaml").exists():
-                    print(f"generate {database_path}/{mode_s3dis}_database.yaml first")
+                    print(f"genera2te {database_path}/{mode_s3dis}_database.yaml first")
                     exit()
                 self._data.extend(
                     self._load_yaml(database_path / f"{mode_s3dis}_database.yaml")
