@@ -105,9 +105,7 @@ def evaluate_matches(matches):
     dist_confs = [opt["distance_confs"][0]]
 
     # results: class x overlap
-    ap = np.zeros(
-        (len(dist_threshes), len(CLASS_LABELS), len(overlaps)), float
-    )
+    ap = np.zeros((len(dist_threshes), len(CLASS_LABELS), len(overlaps)), float)
     for di, (min_region_size, distance_thresh, distance_conf) in enumerate(
         zip(min_region_sizes, dist_threshes, dist_confs)
     ):
@@ -146,7 +144,7 @@ def evaluate_matches(matches):
                     cur_score = np.ones(len(gt_instances)) * (-float("inf"))
                     cur_match = np.zeros(len(gt_instances), dtype=bool)
                     # collect matches
-                    for (gti, gt) in enumerate(gt_instances):
+                    for gti, gt in enumerate(gt_instances):
                         found_match = False
                         num_pred = len(gt["matched_pred"])
                         for pred in gt["matched_pred"]:
@@ -207,9 +205,7 @@ def evaluate_matches(matches):
                                     or gt["dist_conf"] < distance_conf
                                 ):
                                     num_ignore += gt["intersection"]
-                            proportion_ignore = (
-                                float(num_ignore) / pred["vert_count"]
-                            )
+                            proportion_ignore = float(num_ignore) / pred["vert_count"]
                             # if not ignored append false positive
                             if proportion_ignore <= overlap_th:
                                 cur_true = np.append(cur_true, 0)
@@ -243,9 +239,7 @@ def evaluate_matches(matches):
                     # y_true_sorted_cumsum is empty
                     # num_true_examples = y_true_sorted_cumsum[-1]
                     num_true_examples = (
-                        y_true_sorted_cumsum[-1]
-                        if len(y_true_sorted_cumsum) > 0
-                        else 0
+                        y_true_sorted_cumsum[-1] if len(y_true_sorted_cumsum) > 0 else 0
                     )
                     precision = np.zeros(num_prec_recall)
                     recall = np.zeros(num_prec_recall)
@@ -269,14 +263,10 @@ def evaluate_matches(matches):
 
                     # compute average of precision-recall curve
                     recall_for_conv = np.copy(recall)
-                    recall_for_conv = np.append(
-                        recall_for_conv[0], recall_for_conv
-                    )
+                    recall_for_conv = np.append(recall_for_conv[0], recall_for_conv)
                     recall_for_conv = np.append(recall_for_conv, 0.0)
 
-                    stepWidths = np.convolve(
-                        recall_for_conv, [-0.5, 0, 0.5], "valid"
-                    )
+                    stepWidths = np.convolve(recall_for_conv, [-0.5, 0, 0.5], "valid")
                     # integrate is now simply a dot product
                     ap_current = np.dot(precision, stepWidths)
 
@@ -299,18 +289,12 @@ def compute_averages(aps):
     avg_dict["all_ap_50%"] = np.nanmean(aps[d_inf, :, o50])
     avg_dict["all_ap_25%"] = np.nanmean(aps[d_inf, :, o25])
     avg_dict["classes"] = {}
-    for (li, label_name) in enumerate(CLASS_LABELS):
+    for li, label_name in enumerate(CLASS_LABELS):
         avg_dict["classes"][label_name] = {}
         # avg_dict["classes"][label_name]["ap"]       = np.average(aps[ d_inf,li,  :])
-        avg_dict["classes"][label_name]["ap"] = np.average(
-            aps[d_inf, li, oAllBut25]
-        )
-        avg_dict["classes"][label_name]["ap50%"] = np.average(
-            aps[d_inf, li, o50]
-        )
-        avg_dict["classes"][label_name]["ap25%"] = np.average(
-            aps[d_inf, li, o25]
-        )
+        avg_dict["classes"][label_name]["ap"] = np.average(aps[d_inf, li, oAllBut25])
+        avg_dict["classes"][label_name]["ap50%"] = np.average(aps[d_inf, li, o50])
+        avg_dict["classes"][label_name]["ap25%"] = np.average(aps[d_inf, li, o25])
     return avg_dict
 
 
@@ -382,7 +366,7 @@ def assign_instances_for_scan(pred: dict, gt_file: str):
         # matched gt instances
         matched_gt = []
         # go thru all gt instances with matching label
-        for (gt_num, gt_inst) in enumerate(gt2pred[label_name]):
+        for gt_num, gt_inst in enumerate(gt2pred[label_name]):
             intersection = np.count_nonzero(
                 np.logical_and(gt_ids == gt_inst["instance_id"], pred_mask)
             )
@@ -415,7 +399,7 @@ def print_results(avgs):
     print(line)
     print("#" * lineLen)
 
-    for (li, label_name) in enumerate(CLASS_LABELS):
+    for li, label_name in enumerate(CLASS_LABELS):
         ap_avg = avgs["classes"][label_name]["ap"]
         ap_50o = avgs["classes"][label_name]["ap50%"]
         ap_25o = avgs["classes"][label_name]["ap25%"]
@@ -441,9 +425,7 @@ def print_results(avgs):
 def write_result_file(avgs, filename):
     _SPLITTER = ","
     with open(filename, "w") as f:
-        f.write(
-            _SPLITTER.join(["class", "class id", "ap", "ap50", "ap25"]) + "\n"
-        )
+        f.write(_SPLITTER.join(["class", "class id", "ap", "ap50", "ap25"]) + "\n")
         for i in range(len(VALID_CLASS_IDS)):
             class_name = CLASS_LABELS[i]
             class_id = VALID_CLASS_IDS[i]
@@ -451,16 +433,12 @@ def write_result_file(avgs, filename):
             ap50 = avgs["classes"][class_name]["ap50%"]
             ap25 = avgs["classes"][class_name]["ap25%"]
             f.write(
-                _SPLITTER.join(
-                    [str(x) for x in [class_name, class_id, ap, ap50, ap25]]
-                )
+                _SPLITTER.join([str(x) for x in [class_name, class_id, ap, ap50, ap25]])
                 + "\n"
             )
 
 
-def evaluate(
-    preds: dict, gt_path: str, output_file: str, dataset: str = "scannet"
-):
+def evaluate(preds: dict, gt_path: str, output_file: str, dataset: str = "scannet"):
     global CLASS_LABELS
     global VALID_CLASS_IDS
     global ID_TO_LABEL
@@ -491,9 +469,7 @@ def evaluate(
             "Clutter",
             "Fence",
         ]
-        VALID_CLASS_IDS = np.array(
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        )
+        VALID_CLASS_IDS = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
         ID_TO_LABEL = {}
         LABEL_TO_ID = {}
@@ -972,14 +948,12 @@ def evaluate(
             gt_ins = gt_ids - (gt_ids // 1000) * 1000
 
             # pred_sem = v['pred_classes'] - 1
-            pred_sem = np.zeros(v["pred_masks"].shape[0], dtype=np.int)
+            pred_sem = np.zeros(v["pred_masks"].shape[0], dtype=int)
             # TODO CONTINUE HERE!!!!!!!!!!!!!
-            pred_ins = np.zeros(v["pred_masks"].shape[0], dtype=np.int)
+            pred_ins = np.zeros(v["pred_masks"].shape[0], dtype=int)
 
             for inst_id in reversed(range(v["pred_masks"].shape[1])):
-                point_ids = np.argwhere(v["pred_masks"][:, inst_id] == 1.0)[
-                    :, 0
-                ]
+                point_ids = np.argwhere(v["pred_masks"][:, inst_id] == 1.0)[:, 0]
                 pred_ins[point_ids] = inst_id + 1
                 pred_sem[point_ids] = v["pred_classes"][inst_id] - 1
 
@@ -1004,9 +978,7 @@ def evaluate(
             uniq, counts = np.unique(gt_sem, return_counts=True)
             gt_classes[uniq] += counts
 
-            uniq, counts = np.unique(
-                gt_sem[pred_sem == gt_sem], return_counts=True
-            )
+            uniq, counts = np.unique(gt_sem[pred_sem == gt_sem], return_counts=True)
             true_positive_classes[uniq] += counts
 
             # instance
