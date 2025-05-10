@@ -14,9 +14,7 @@ logger = logging.getLogger(__name__)
 class LidarDataset(Dataset):
     def __init__(
         self,
-        data_dir: Optional[
-            Union[str, Tuple[str]]
-        ] = "data/processed/semantic_kitti",
+        data_dir: Optional[Union[str, Tuple[str]]] = "data/processed/semantic_kitti",
         label_db_filepath: Optional[
             str
         ] = "./data/processed/semantic_kitti/label_database.yaml",
@@ -41,14 +39,13 @@ class LidarDataset(Dataset):
 
         # loading database files
         self._data = []
+        print("iotz")
         for database_path in self.data_dir:
             database_path = Path(database_path)
             if not (database_path / f"{mode}_database.yaml").exists():
                 print(f"generate {database_path}/{mode}_database.yaml first")
                 exit()
-            self._data.extend(
-                self._load_yaml(database_path / f"{mode}_database.yaml")
-            )
+            self._data.extend(self._load_yaml(database_path / f"{mode}_database.yaml"))
 
         labels = self._load_yaml(Path(label_db_filepath))
         self._labels = self._select_correct_labels(labels, num_labels)
@@ -90,9 +87,7 @@ class LidarDataset(Dataset):
         for sweep in self.data[idx]:
             points.append(np.load(sweep["filepath"]))
             # rotate
-            points[-1][:, :3] = (
-                points[-1][:, :3] @ np.array(sweep["pose"])[:3, :3]
-            )
+            points[-1][:, :3] = points[-1][:, :3] @ np.array(sweep["pose"])[:3, :3]
             # translate
             points[-1][:, :3] += np.array(sweep["pose"])[:3, 3]
         points = np.vstack(points)
@@ -122,8 +117,7 @@ class LidarDataset(Dataset):
             coordinates -= coordinates.mean(0)
             if 0.5 > random():
                 coordinates += (
-                    np.random.uniform(coordinates.min(0), coordinates.max(0))
-                    / 2
+                    np.random.uniform(coordinates.min(0), coordinates.max(0)) / 2
                 )
             aug = self.volume_augmentations(
                 points=coordinates,
@@ -190,9 +184,7 @@ class LidarDataset(Dataset):
             raise ValueError(msg)
 
     def _remap_from_zero(self, labels):
-        labels[
-            ~np.isin(labels, list(self.label_info.keys()))
-        ] = self.ignore_label
+        labels[~np.isin(labels, list(self.label_info.keys()))] = self.ignore_label
         # remap to the range from 0
         for i, k in enumerate(self.label_info.keys()):
             labels[labels == k] = i
