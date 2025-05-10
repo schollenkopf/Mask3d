@@ -65,19 +65,19 @@ cd ../../
 cd mask3d
 # python main_instance_segmentation.py   general.checkpoint='../checkpoints/area3_from_scratch.ckpt'
 
-# python main_instance_segmentation.py \
-#   general.project_name="s3dis" \
-#   general.experiment_name="area${CURR_AREA}_pretrained" \
-#   data.batch_size=4 \
-#   data/datasets=s3dis \
-#   general.num_targets=14 \
-#   data.num_labels=13 \
-#   general.area=${CURR_AREA} \
-#   general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
-#   trainer.check_val_every_n_epoch=10 \
-#   optimizer.lr=0.00001
+python main_instance_segmentation.py \
+  general.project_name="s3dis" \
+  general.experiment_name="area${CURR_AREA}_pretrained" \
+  data.batch_size=4 \
+  data/datasets=s3dis \
+  general.num_targets=14 \
+  data.num_labels=13 \
+  general.area=${CURR_AREA} \
+  general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
+  trainer.check_val_every_n_epoch=10 \
+  optimizer.lr=0.00001
 
 
-python -m datasets.preprocessing.s3dis_preprocessing preprocess \
---data_dir="data/dataset" \
---save_dir="data/processed/s3dis"
+# python -m datasets.preprocessing.s3dis_preprocessing preprocess \
+# --data_dir="data/dataset" \
+# --save_dir="data/processed/s3dis"
