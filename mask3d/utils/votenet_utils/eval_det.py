@@ -161,13 +161,13 @@ def eval_det_cls(pred, gt, ovthresh=0.25, use_07_metric=False, get_iou_func=get_
     # compute precision recall
     fp = np.cumsum(fp)
     tp = np.cumsum(tp)
-    rec = tp / float(npos) if npos > 0 else 0.0
+    rec = tp / float(npos) if npos > 0 else np.zeros_like(tp)
 
     # print('NPOS: ', npos)
     # avoid divide by zero in case the first detection matches a difficult
     # ground truth
-    if tp + fp == 0:
-        prec = 0.0  # or optionally: continue
+    if (tp + fp == 0).all():
+        prec = np.zeros_like(tp)
     else:
         prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
     ap = voc_ap(rec, prec, use_07_metric)
