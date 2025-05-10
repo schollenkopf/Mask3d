@@ -65,6 +65,12 @@ cd ../../
 cd mask3d
 # python main_instance_segmentation.py   general.checkpoint='../checkpoints/area3_from_scratch.ckpt'
 
+CURR_AREA=1  # set the area number accordingly [1,6]
+CURR_DBSCAN=0.6
+CURR_TOPK=-1
+CURR_QUERY=100
+
+
 python main_instance_segmentation.py \
   general.project_name="s3dis" \
   general.experiment_name="area${CURR_AREA}_pretrained" \
