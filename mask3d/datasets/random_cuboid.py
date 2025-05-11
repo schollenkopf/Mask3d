@@ -37,7 +37,7 @@ class RandomCuboid(object):
     def __call__(self, point_cloud):
         if point_cloud.shape[0] < self.min_points:
             print("too small pcd")
-            return np.ones(point_cloud.shape[0], dtype=np.bool)
+            return np.ones(point_cloud.shape[0], dtype=bool)
 
         range_xyz = np.max(point_cloud[:, :2], axis=0) - np.min(
             point_cloud[:, :2], axis=0
@@ -54,12 +54,8 @@ class RandomCuboid(object):
             sample_center = point_cloud[:, :2].min(axis=0) + range_xyz / 2
 
             if self.version1:
-                offset_x = np.random.uniform(
-                    -range_xyz[0] / 4, range_xyz[0] / 4
-                )
-                offset_y = np.random.uniform(
-                    -range_xyz[1] / 4, range_xyz[1] / 4
-                )
+                offset_x = np.random.uniform(-range_xyz[0] / 4, range_xyz[0] / 4)
+                offset_y = np.random.uniform(-range_xyz[1] / 4, range_xyz[1] / 4)
             else:
                 offset_x = np.random.uniform(
                     -(range_xyz[0] / 2) + self.crop_length / 4,
@@ -76,12 +72,8 @@ class RandomCuboid(object):
             min_xy = sample_center - self.crop_length / 2
             max_xy = sample_center + self.crop_length / 2
 
-            upper_idx = (
-                np.sum((point_cloud[:, :2] <= max_xy).astype(np.int32), 1) == 2
-            )
-            lower_idx = (
-                np.sum((point_cloud[:, :2] >= min_xy).astype(np.int32), 1) == 2
-            )
+            upper_idx = np.sum((point_cloud[:, :2] <= max_xy).astype(np.int32), 1) == 2
+            lower_idx = np.sum((point_cloud[:, :2] >= min_xy).astype(np.int32), 1) == 2
 
             new_pointidx = (upper_idx) & (lower_idx)
 
@@ -93,4 +85,4 @@ class RandomCuboid(object):
 
         # fallback
         print("FALLBACK")
-        return np.ones(point_cloud.shape[0], dtype=np.bool)
+        return np.ones(point_cloud.shape[0], dtype=bool)
