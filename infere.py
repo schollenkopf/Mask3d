@@ -15,7 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 print("loading mesh")
 # load input data
-pointcloud_file = "scans/1717333010226698.ply"
+pointcloud_file = "scans/test.ply"
 mesh = load_mesh(pointcloud_file)
 
 # prepare data
