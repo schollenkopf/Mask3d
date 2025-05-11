@@ -1081,8 +1081,8 @@ def evaluate(preds: dict, gt_path: str, output_file: str, dataset: str = "scanne
         precision = np.zeros(NUM_CLASSES)
         recall = np.zeros(NUM_CLASSES)
         for i_sem in range(NUM_CLASSES):
-            tp = np.asarray(tpsins[i_sem]).astype(np.float)
-            fp = np.asarray(fpsins[i_sem]).astype(np.float)
+            tp = np.asarray(tpsins[i_sem]).astype(float)
+            fp = np.asarray(fpsins[i_sem]).astype(float)
             tp = np.sum(tp)
             fp = np.sum(fp)
             rec = tp / total_gt_ins[i_sem]
