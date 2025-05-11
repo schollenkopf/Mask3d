@@ -2,7 +2,7 @@
 # embedded options to bsub - start with #BSUB
 # -- our name ---
 #BSUB -J gpuCorePython 
-#BSUB -q gpua100
+#BSUB -q gpuv100
 ### request the number of GPUs
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### request the number of CPU cores (at least 4x the number of GPUs)
@@ -62,27 +62,26 @@ cd ../../
 pip install .
 
 #pip install typing_extensions==4.11.0
-# python infere.py
-cd mask3d
-# python main_instance_segmentation.py   general.checkpoint='../checkpoints/area3_from_scratch.ckpt'
+python infere.py
+# cd mask3d
 
-CURR_AREA=1  # set the area number accordingly [1,6]
-CURR_DBSCAN=0.6
-CURR_TOPK=-1
-CURR_QUERY=100
+# CURR_AREA=1  # set the area number accordingly [1,6]
+# CURR_DBSCAN=0.6
+# CURR_TOPK=-1
+# CURR_QUERY=100
 
 
-python main_instance_segmentation.py \
-  general.project_name="s3dis" \
-  general.experiment_name="area${CURR_AREA}_pretrained" \
-  data.batch_size=4 \
-  data/datasets=s3dis \
-  general.num_targets=14 \
-  data.num_labels=13 \
-  general.area=${CURR_AREA} \
-  general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
-  trainer.check_val_every_n_epoch=10 \
-  optimizer.lr=0.00001
+# python main_instance_segmentation.py \
+#   general.project_name="s3dis" \
+#   general.experiment_name="area${CURR_AREA}_pretrained" \
+#   data.batch_size=4 \
+#   data/datasets=s3dis \
+#   general.num_targets=14 \
+#   data.num_labels=13 \
+#   general.area=${CURR_AREA} \
+#   general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
+#   trainer.check_val_every_n_epoch=10 \
+#   optimizer.lr=0.00001
 
 
 # python -m datasets.preprocessing.s3dis_preprocessing preprocess \
