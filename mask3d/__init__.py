@@ -130,10 +130,11 @@ def prepare_data(mesh, device):
 
     points = np.asarray(mesh.vertices)
     colors = np.asarray(mesh.vertex_colors)
+    colors = np.ones((len(colors), 3))
     colors = colors * 255.0
 
-    pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
-    colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
+    # pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
+    # colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
 
     coords = np.floor(points / 0.02)
     _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
