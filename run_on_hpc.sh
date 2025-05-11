@@ -27,7 +27,7 @@ module load cuda/11.3
 
 source ../../miniconda3/bin/activate
 rm -rf ../../miniconda3/envs/mask3d_cuda113/lib/python3.10/site-packages/mask3d*
-rm -rf mask3d/saved/*
+# rm -rf mask3d/saved/*
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 
 #conda env create -f environment.yml
