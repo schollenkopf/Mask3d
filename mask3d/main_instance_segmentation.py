@@ -2,6 +2,7 @@ import logging
 import os
 from hashlib import md5
 from uuid import uuid4
+from pytorch_lightning.loggers import TensorBoardLogger
 import hydra
 from dotenv import load_dotenv
 from omegaconf import DictConfig, OmegaConf
@@ -45,10 +46,11 @@ def get_parameters(cfg: DictConfig):
 
     for log in cfg.logging:
         print(log)
-        loggers.append(hydra.utils.instantiate(log))
-        loggers[-1].log_hyperparams(
-            flatten_dict(OmegaConf.to_container(cfg, resolve=True))
-        )
+        loggers.append(TensorBoardLogger("logs", name="default"))
+        # loggers.append(hydra.utils.instantiate(log))
+        # loggers[-1].log_hyperparams(
+        #     flatten_dict(OmegaConf.to_container(cfg, resolve=True))
+        # )
 
     model = InstanceSegmentation(cfg)
     if cfg.general.backbone_checkpoint is not None:
