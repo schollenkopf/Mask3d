@@ -142,6 +142,7 @@ def prepare_data(mesh, device):
 
     raw_coordinates = features[:, -3:]
     features = features[:, :-3]
+    features = [torch.from_numpy(features).float()]
 
     data = ME.SparseTensor(
         coordinates=raw_coordinates,
