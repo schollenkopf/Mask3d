@@ -141,7 +141,7 @@ def prepare_data(mesh, device):
         features = np.hstack((features, raw_coordinates))
 
     raw_coordinates = features[:, -3:]
-    features = data.features[:, :-3]
+    features = features[:, :-3]
 
     data = ME.SparseTensor(
         coordinates=raw_coordinates,
