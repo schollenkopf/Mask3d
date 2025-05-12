@@ -154,7 +154,7 @@ def prepare_data(mesh, device):
     ]  # [] bc its a batch of size 1
     sample_features = colors[unique_map]
     features = [
-        torch.from_numpy(sample_features).float()
+        torch.from_numpy(sample_features).double()
     ]  # [] bc its a batch of size 1
 
     coordinates, _ = ME.utils.sparse_collate(coords=coordinates, feats=features)
