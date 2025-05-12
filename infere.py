@@ -20,13 +20,15 @@ mesh = load_mesh(pointcloud_file)
 
 # prepare data
 print("prepare mesh")
-data, points, colors, features, unique_map, inverse_map = prepare_data(mesh, device)
+data, raw_coordinates, colors, features, unique_map, inverse_map = prepare_data(
+    mesh, device
+)
 print(f"data feat shape:  {data.features.shape}")
 print(f"data feat nans:   {data.features.isnan().sum()}")
 # run model
 print("run model")
 with torch.no_grad():
-    outputs = model(data, raw_coordinates=points)
+    outputs = model(data, raw_coordinates=raw_coordinates)
 
 print("map output")
 # map output to point cloud
