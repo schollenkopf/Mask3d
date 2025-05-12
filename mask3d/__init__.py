@@ -165,7 +165,14 @@ def prepare_data(mesh, device):
         device=device,
     )
 
-    return data, torch.from_numpy(points), colors, features, unique_map, inverse_map
+    return (
+        data,
+        torch.from_numpy(sample_coordinates).int(),
+        colors,
+        features,
+        unique_map,
+        inverse_map,
+    )
 
 
 def map_output_to_pointcloud(
