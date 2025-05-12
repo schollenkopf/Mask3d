@@ -72,7 +72,9 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.general.dbscan_eps = 0.95
         cfg.general.export_threshold = 0.001
 
-        cfg.data.num_labels = 13
+        cfg.data.num_labels = 1
+        cfg.data.add_colors = False
+        cfg.data.add_normals = False
         cfg.data.test_mode = "test"
 
         cfg.model.num_queries = 150
