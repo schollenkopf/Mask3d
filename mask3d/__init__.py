@@ -173,7 +173,7 @@ def prepare_data(mesh, device):
     return (
         data,
         raw_coordinates,
-        colors,
+        color,
         features,
         unique_map,
         inverse_map,
