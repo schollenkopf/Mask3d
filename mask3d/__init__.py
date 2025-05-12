@@ -66,6 +66,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
     if dataset_name == "s3dis":
         cfg.general.num_targets = 14
         cfg.general.train_mode = False
+        cfg.data/datasets="s3dis"
         cfg.general.eval_on_segments = True
         cfg.general.topk_per_image = 300
         cfg.general.use_dbscan = True
@@ -148,32 +149,33 @@ def prepare_data(mesh, device):
     raw_coordinates = torch.from_numpy(raw_coordinates).float()
     features = torch.from_numpy(features).float()
 
+    
+
+    # pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
+    # colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
+
+    raw_coordinates = np.floor(raw_coordinates / 0.02)
+    _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
+        coordinates=raw_coordinates,
+        features=features,
+        return_index=True,
+        return_inverse=True,
+    )
+
+    raw_coordinates = raw_coordinates[unique_map].int()
+
+    features = features[unique_map]
+
+
+    # coordinates, features = ME.utils.sparse_collate(coords=coordinates, feats=features)
+    # features = torch.cat(features, dim=0)
+
     data = ME.SparseTensor(
         coordinates=raw_coordinates,
         features=features,
         device=device,
     )
 
-    # pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
-    # colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
-
-    # coords = np.floor(points / 0.02)
-    # _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
-    #     coordinates=coords,
-    #     features=colors,
-    #     return_index=True,
-    #     return_inverse=True,
-    # )
-
-    # sample_coordinates = coords[unique_map]
-    # coordinates = [torch.from_numpy(sample_coordinates).int()]
-    # sample_features = colors[unique_map]
-    # features = [torch.from_numpy(sample_features).float()]
-
-    # coordinates, features = ME.utils.sparse_collate(coords=coordinates, feats=features)
-    # features = torch.cat(features, dim=0)
-    unique_map = None
-    inverse_map = None
     return (
         data,
         raw_coordinates,
