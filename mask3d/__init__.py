@@ -169,7 +169,8 @@ def prepare_data(mesh, device):
 
     # coordinates, features = ME.utils.sparse_collate(coords=coordinates, feats=features)
     # features = torch.cat(features, dim=0)
-
+    unique_map = None
+    inverse_map = None
     return (
         data,
         raw_coordinates,
