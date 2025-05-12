@@ -126,64 +126,44 @@ def load_mesh(pcl_file):
 
 
 def prepare_data(mesh, device):
-
+    
     # normalization for point cloud features
-    # color_mean = (0.47793125906962, 0.4303257521323044, 0.3749598901421883)
-    # color_std = (0.2834475483823543, 0.27566157565723015, 0.27018971370874995)
-    # normalize_color = A.Normalize(mean=color_mean, std=color_std)
-
-    points = np.asarray(mesh.vertices)
-    raw_coordinates = points.copy()
-    color = np.asarray(mesh.vertex_colors)
-    color = np.ones((len(color), 3))
-    color = color * 255.0
-
-    features = color
-    if len(features.shape) == 1:
-        features = np.hstack((features[None, ...], raw_coordinates))
-    else:
-        features = np.hstack((features, raw_coordinates))
-
-    raw_coordinates = features[:, -3:]
-    features = features[:, :-3]
-    raw_coordinates = torch.from_numpy(raw_coordinates).float()
-    features = torch.from_numpy(features).float()
+    color_mean = (0.47793125906962, 0.4303257521323044, 0.3749598901421883)
+    color_std = (0.2834475483823543, 0.27566157565723015, 0.27018971370874995)
+    normalize_color = A.Normalize(mean=color_mean, std=color_std)
 
     
+    points = np.asarray(mesh.vertices)
+    colors = np.asarray(mesh.vertex_colors)
+    color = np.ones((len(color), 3))
+    colors = colors * 255.
 
     # pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
     # colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
 
-    raw_coordinates = np.floor(raw_coordinates / 0.02)
+    coords = np.floor(points / 0.02)
     _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
-        coordinates=raw_coordinates,
-        features=features,
+        coordinates=coords,
+        features=colors,
         return_index=True,
         return_inverse=True,
     )
 
-    raw_coordinates = raw_coordinates[unique_map].int()
+    sample_coordinates = coords[unique_map]
+    coordinates = [torch.from_numpy(sample_coordinates).int()] #[] bc its a batch
+    sample_features = colors[unique_map]
+    features = [torch.from_numpy(sample_features).float()]
 
-    features = features[unique_map]
-
-
-    # coordinates, features = ME.utils.sparse_collate(coords=coordinates, feats=features)
-    # features = torch.cat(features, dim=0)
-
+    coordinates, _ = ME.utils.sparse_collate(coords=coordinates, feats=features)
+    features = torch.cat(features, dim=0)
     data = ME.SparseTensor(
-        coordinates=raw_coordinates,
+        coordinates=coordinates,
         features=features,
         device=device,
     )
-
-    return (
-        data,
-        raw_coordinates,
-        color,
-        features,
-        unique_map,
-        inverse_map,
-    )
+    
+    
+    return data, points, colors, features, unique_map, inverse_map
 
 
 def map_output_to_pointcloud(
