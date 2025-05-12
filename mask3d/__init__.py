@@ -149,8 +149,9 @@ def prepare_data(mesh, device):
     sample_features = colors[unique_map]
     features = [torch.from_numpy(sample_features).float()]
 
-    coordinates, _ = ME.utils.sparse_collate(coords=coordinates, feats=features)
-    features = torch.cat(features, dim=0)
+    coordinates, features = ME.utils.sparse_collate(coords=coordinates, feats=features)
+    # features = torch.cat(features, dim=0)
+
     data = ME.SparseTensor(
         coordinates=coordinates,
         features=features,

@@ -26,7 +26,7 @@ print(f"data feat nans:   {data.features.isnan().sum()}")
 # run model
 print("run model")
 with torch.no_grad():
-    outputs = model(data, raw_coordinates=features)
+    outputs = model(data, raw_coordinates=points)
 
 print("map output")
 # map output to point cloud
