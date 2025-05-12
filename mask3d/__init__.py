@@ -133,7 +133,7 @@ def prepare_data(mesh, device):
 
     points = np.asarray(mesh.vertices)
     colors = np.asarray(mesh.vertex_colors)
-    color = np.ones((len(color), 3))
+    colors = np.ones((len(colors), 3))
     colors = colors * 255.0
 
     # pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
