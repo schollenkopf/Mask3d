@@ -167,7 +167,7 @@ def prepare_data(mesh, device):
 
     return (
         data,
-        torch.from_numpy(sample_coordinates),
+        torch.from_numpy(sample_coordinates).double(),
         colors,
         features,
         unique_map,
