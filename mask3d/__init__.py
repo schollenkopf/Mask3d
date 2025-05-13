@@ -131,7 +131,7 @@ def prepare_data(mesh, device):
     colors = np.ones((len(colors), 3))
     colors = colors * 255.0
 
-    original_coordinates = coordinates.copy()
+    points = coordinates.copy()
     features = np.hstack((colors, coordinates))
 
     # voxelise with 2cm resolution
