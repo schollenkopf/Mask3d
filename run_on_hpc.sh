@@ -62,8 +62,8 @@ cd ../../
 pip install .
 
 #pip install typing_extensions==4.11.0
-python infere.py
-# cd mask3d
+# python infere.py
+cd mask3d
 
 # CURR_AREA=1  # set the area number accordingly [1,6]
 # CURR_DBSCAN=0.6
@@ -84,6 +84,6 @@ python infere.py
 #   optimizer.lr=0.00001
 
 
-# python -m datasets.preprocessing.s3dis_preprocessing preprocess \
-# --data_dir="data/dataset" \
-# --save_dir="data/processed/s3dis"
+python -m datasets.preprocessing.s3dis_preprocessing preprocess \
+    --data_dir="data/dataset" \
+    --save_dir="data/processed/s3dis"
