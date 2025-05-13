@@ -126,23 +126,18 @@ def load_mesh(pcl_file):
 
 def prepare_data(mesh, device):
 
-    # normalization for point cloud features
-    color_mean = (0.47793125906962, 0.4303257521323044, 0.3749598901421883)
-    color_std = (0.2834475483823543, 0.27566157565723015, 0.27018971370874995)
-    normalize_color = A.Normalize(mean=color_mean, std=color_std)
-
-    points = np.asarray(mesh.vertices)
+    coordinates = np.asarray(mesh.vertices)
     colors = np.asarray(mesh.vertex_colors)
     colors = np.ones((len(colors), 3))
     colors = colors * 255.0
 
-    # pseudo_image = colors.astype(np.uint8)[np.newaxis, :, :]
-    # colors = np.squeeze(normalize_color(image=pseudo_image)["image"])
+    original_coordinates = coordinates.copy()
+    features = np.hstack((colors, coordinates))
 
     # voxelise with 2cm resolution
-    coords = np.floor(points / 0.02)
+    coords = np.floor(coordinates / 0.02)
     _, _, unique_map, inverse_map = ME.utils.sparse_quantize(
-        coordinates=coords,
+        coordinates=torch.from_numpy(coords).to("cpu").contiguous(),
         features=colors,
         return_index=True,
         return_inverse=True,
@@ -152,13 +147,16 @@ def prepare_data(mesh, device):
     coordinates = [
         torch.from_numpy(sample_coordinates).int()
     ]  # [] bc its a batch of size 1
-    sample_features = colors[unique_map]
+    sample_features = features[unique_map]
     features = [
-        torch.from_numpy(sample_features).double()
+        torch.from_numpy(sample_features).float()
     ]  # [] bc its a batch of size 1
 
-    coordinates, _ = ME.utils.sparse_collate(coords=coordinates, feats=features)
-    features = torch.cat(features, dim=0)
+    coordinates, features = ME.utils.sparse_collate(coords=coordinates, feats=features)
+
+    raw_coordinates = features[:, -3:]
+    features = features[:, :-3]
+    # features = torch.cat(features, dim=0)
     data = ME.SparseTensor(
         coordinates=coordinates,
         features=features,
@@ -167,7 +165,8 @@ def prepare_data(mesh, device):
 
     return (
         data,
-        sample_coordinates,
+        points,
+        raw_coordinates,
         colors,
         features,
         unique_map,
