@@ -175,7 +175,7 @@ def prepare_data(mesh, device):
 
 
 def map_output_to_pointcloud(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.1
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.9
 ):
 
     # parse predictions
@@ -198,9 +198,9 @@ def map_output_to_pointcloud(
         m = p_masks > 0.5
         c_m = p_masks[m].sum() / (m.sum() + 1e-8)
         c = c_label * c_m
-        print(i)
-        print(p_labels)
+
         print(l)
+
         if l < 200 and c > confidence_threshold:
             labels.append(l.item())
             confidences.append(c.item())
@@ -220,7 +220,7 @@ def map_output_to_pointcloud(
     for i, (l, c, m) in enumerate(
         sorted(zip(labels, confidences, instance_masks), reverse=False)
     ):
-
+        print(l)
         if label_space == "scannet200":
             label_offset = 2
             if l == 0:
