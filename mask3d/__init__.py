@@ -78,7 +78,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.data.in_channels = 3
         cfg.data.test_mode = "test"
 
-        cfg.model.num_queries = 20
+        cfg.model.num_queries = 30
 
     if dataset_name == "scannet":
         cfg.general.num_targets = 19
@@ -175,7 +175,7 @@ def prepare_data(mesh, device):
 
 
 def map_output_to_pointcloud(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.5
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.4
 ):
 
     # parse predictions
