@@ -65,7 +65,7 @@ pip install .
 # python infere.py
 cd mask3d
 
-# CURR_AREA=1  # set the area number accordingly [1,6]
+CURR_AREA=1  # set the area number accordingly [1,6]
 # CURR_DBSCAN=0.6
 # CURR_TOPK=-1
 # CURR_QUERY=100
@@ -74,9 +74,9 @@ cd mask3d
 
 
 
-python -m datasets.preprocessing.s3dis_preprocessing preprocess \
-    --data_dir="data/dataset" \
-    --save_dir="data/processed/s3dis"
+# python -m datasets.preprocessing.s3dis_preprocessing preprocess \
+#     --data_dir="data/dataset" \
+#     --save_dir="data/processed/s3dis"
 
 
 python main_instance_segmentation.py \
