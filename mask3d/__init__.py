@@ -78,7 +78,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.data.in_channels = 3
         cfg.data.test_mode = "test"
 
-        cfg.model.num_queries = 150
+        cfg.model.num_queries = 20
 
     if dataset_name == "scannet":
         cfg.general.num_targets = 19
