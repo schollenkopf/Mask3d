@@ -31,7 +31,11 @@ for i, filename in enumerate(os.listdir("scans/")):
 
     labels = map_output_to_pointcloud(mesh, outputs, inverse_map)
 
-    save_path = os.path.join(
+    save_path_instance = os.path.join(
+        "scans/", "instance_" + os.path.splitext(filename)[0] + ".ply"
+    )
+    save_colorized_mesh(mesh, labels, save_path_instance, label=False)
+    save_path_label = os.path.join(
         "scans/", "labeled_" + os.path.splitext(filename)[0] + ".ply"
     )
-    save_colorized_mesh(mesh, labels, save_path, colormap="scannet200")
+    save_colorized_mesh(mesh, labels, save_path_label)

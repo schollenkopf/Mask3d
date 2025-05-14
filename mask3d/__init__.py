@@ -26,6 +26,7 @@ from hydra.experimental import initialize, compose
 import albumentations as A
 import MinkowskiEngine as ME
 import numpy as np
+from sklearn.cluster import DBSCAN
 import open3d as o3d
 
 # imports for output
@@ -78,7 +79,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.data.in_channels = 3
         cfg.data.test_mode = "test"
 
-        cfg.model.num_queries = 30
+        cfg.model.num_queries = 20
 
     if dataset_name == "scannet":
         cfg.general.num_targets = 19
@@ -175,7 +176,7 @@ def prepare_data(mesh, device):
 
 
 def map_output_to_pointcloud(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.4
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.0
 ):
 
     # parse predictions
@@ -202,45 +203,80 @@ def map_output_to_pointcloud(
         print(l)
 
         if l < 200 and c > confidence_threshold:
-            labels.append(l.item())
-            confidences.append(c.item())
-            instance_masks.append(
-                m[inverse_map]
-            )  # mapping the mask back to the original point cloud
+            full_res_mask = m[inverse_map]
+            masked_coords = coords[full_res_mask]
 
+            if len(masked_coords) == 0:
+                continue
+
+            # Apply DBSCAN
+            db = DBSCAN(eps=0.95, min_samples=1).fit(masked_coords)
+            cluster_labels = db.labels_
+
+            for cluster_id in np.unique(cluster_labels):
+                if cluster_id == -1:
+                    continue  # skip noise
+
+                cluster_mask = cluster_labels == cluster_id
+                cluster_indices = np.where(full_res_mask)[0][cluster_mask]
+
+                # Create binary mask for this cluster
+                instance_mask = torch.zeros(len(mesh.vertices), dtype=torch.bool)
+                instance_mask[cluster_indices] = True
+
+                labels.append(int(l.item()))
+                confidences.append(float(c.item()))
+                instance_masks.append(instance_mask)
     # save labelled mesh
-    mesh_labelled = o3d.geometry.TriangleMesh()
-    mesh_labelled.vertices = mesh.vertices
-    mesh_labelled.triangles = mesh.triangles
+    # mesh_labelled = o3d.geometry.TriangleMesh()
+    # mesh_labelled.vertices = mesh.vertices
+    # mesh_labelled.triangles = mesh.triangles
 
     labels_mapped = np.zeros((len(mesh.vertices), 1))
-
+    instances_mapped = np.zeros((len(mesh.vertices), 1))
     instance_id = 1  # Starting instance ID
 
     for i, (l, c, m) in enumerate(
         sorted(zip(labels, confidences, instance_masks), reverse=False)
     ):
         print(l)
-        if label_space == "scannet200":
-            label_offset = 2
-            if l == 0:
-                l = -1 + label_offset
-            else:
-                l = int(l) + label_offset
+        # if label_space == "scannet200":
+        #     label_offset = 2
+        #     if l == 0:
+        #         l = -1 + label_offset
+        #     else:
+        #         l = int(l) + label_offset
 
-        labels_mapped[m == 1] = instance_id
+        instances_mapped[m == 1] = instance_id
+        labels_mapped[m == 1] = l
         instance_id += 1
 
-    return labels_mapped
+    return labels_mapped, instances_mapped
 
 
-def save_colorized_mesh(mesh, labels_mapped, output_file, colormap="scannet"):
-
+def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
+    colors = np.array(
+        [
+            [0, 0, 1],  # "ceiling",
+            [0, 0, 0.5],  # "floor",
+            [0, 1, 0],  # "wall",
+            [0, 1, 1],  # "beam",
+            [1, 0, 1],  # "column",
+            [0, 0, 0],  # "window",
+            [1, 1, 1],  # "door",
+            [0.5, 0.5, 0.5],  # "table",
+            [0.5, 0, 1],  # "chair",
+            [0, 0.5, 0],  # "sofa",
+            [0.5, 0, 0],  # "bookcase",
+            [1, 0, 0],  # "board",
+            [0.5, 0, 1],  # "clutter",
+        ]
+    )
     # Generate unique colors for each instance
     unique_labels = np.unique(labels_mapped)
-    print("nr unique labels:", unique_labels)
     np.random.seed(42)  # For reproducibility
-    colors = np.random.rand(len(unique_labels), 3)
+    if not label:
+        colors = np.random.rand(len(unique_labels), 3)
 
     # Map colors to the mesh
     vertex_colors = np.zeros((len(mesh.vertices), 3))
