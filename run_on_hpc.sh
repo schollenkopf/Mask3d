@@ -62,10 +62,12 @@ cd ../../
 pip install .
 
 #pip install typing_extensions==4.11.0
-# python infere.py
-cd mask3d
+python infere.py
 
-CURR_AREA=1  # set the area number accordingly [1,6]
+
+# cd mask3d
+
+# CURR_AREA=1  # set the area number accordingly [1,6]
 # CURR_DBSCAN=0.6
 # CURR_TOPK=-1
 # CURR_QUERY=100
@@ -79,14 +81,14 @@ CURR_AREA=1  # set the area number accordingly [1,6]
 #     --save_dir="data/processed/s3dis"
 
 
-python main_instance_segmentation.py \
-  general.project_name="s3dis" \
-  general.experiment_name="area${CURR_AREA}_pretrained" \
-  data.batch_size=4 \
-  data/datasets=s3dis \
-  general.num_targets=14 \
-  data.num_labels=13 \
-  general.area=${CURR_AREA} \
-  general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
-  trainer.check_val_every_n_epoch=10 \
-  optimizer.lr=0.00001
+# python main_instance_segmentation.py \
+#   general.project_name="s3dis" \
+#   general.experiment_name="area${CURR_AREA}_pretrained" \
+#   data.batch_size=4 \
+#   data/datasets=s3dis \
+#   general.num_targets=14 \
+#   data.num_labels=13 \
+#   general.area=${CURR_AREA} \
+#   general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
+#   trainer.check_val_every_n_epoch=10 \
+#   optimizer.lr=0.00001
