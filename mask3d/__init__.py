@@ -204,7 +204,7 @@ def map_output_to_pointcloud(
 
         if l < 200 and c > confidence_threshold:
             full_res_mask = m[inverse_map]
-            masked_coords = coords[full_res_mask]
+            masked_coords = np.asarray(mesh.vertices)[full_res_mask]
 
             if len(masked_coords) == 0:
                 continue
@@ -214,7 +214,7 @@ def map_output_to_pointcloud(
             cluster_labels = db.labels_
 
             for cluster_id in np.unique(cluster_labels):
-                if cluster_id == -1:
+                if cluster_id == -1 or cluster_id == 13:
                     continue  # skip noise
 
                 cluster_mask = cluster_labels == cluster_id
