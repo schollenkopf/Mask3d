@@ -235,12 +235,13 @@ def map_output_to_pointcloud(
     labels_mapped = np.zeros((len(mesh.vertices), 1))
     instances_mapped = np.zeros((len(mesh.vertices), 1))
     instance_id = 1  # Starting instance ID
-    print(labels)
-    print(confidences)
-    print(instance_masks)
 
     for i, (l, c, m) in enumerate(
-        sorted(zip(labels, confidences, instance_masks), reverse=False)
+        sorted(
+            zip(labels, confidences, instance_masks),
+            key=lambda x: (x[0], x[1]),
+            reverse=False,
+        )
     ):
         print(l)
         # if label_space == "scannet200":
