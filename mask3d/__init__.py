@@ -235,7 +235,9 @@ def map_output_to_pointcloud(
     labels_mapped = np.zeros((len(mesh.vertices), 1))
     instances_mapped = np.zeros((len(mesh.vertices), 1))
     instance_id = 1  # Starting instance ID
-    print(zip(labels, confidences, instance_masks))
+    print(labels)
+    print(confidences)
+    print(instance_masks)
 
     for i, (l, c, m) in enumerate(
         sorted(zip(labels, confidences, instance_masks), reverse=False)
