@@ -89,6 +89,6 @@ python main_instance_segmentation.py \
   general.num_targets=14 \
   data.num_labels=13 \
   general.area=${CURR_AREA} \
-  general.checkpoint="../checkpoints/area3_scannet_pretrained.ckpt" \
+  general.checkpoint="../checkpoints/area3_from_scratch.ckpt" \
   trainer.check_val_every_n_epoch=10 \
   optimizer.lr=0.00001
