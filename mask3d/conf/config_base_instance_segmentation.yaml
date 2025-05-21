@@ -13,7 +13,7 @@ general:
   visualization_point_size: 20
   decoder_id: -1
   export: false
-  use_dbscan: true #false
+  use_dbscan: false
   ignore_class_threshold: 100
   project_name: scannet
   workspace: jonasschult

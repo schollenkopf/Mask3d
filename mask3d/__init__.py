@@ -69,7 +69,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.general.train_mode = False
         cfg.general.eval_on_segments = True
         cfg.general.topk_per_image = 300
-        cfg.general.use_dbscan = True
+        cfg.general.use_dbscan = False
         cfg.general.dbscan_eps = 0.95
         cfg.general.export_threshold = 0.001
 
