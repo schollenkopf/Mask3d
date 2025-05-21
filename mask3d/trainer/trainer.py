@@ -40,9 +40,7 @@ def get_evenly_distributed_colors(
     random.shuffle(HSV_tuples)
     return list(
         map(
-            lambda x: (np.array(colorsys.hsv_to_rgb(*x)) * 255).astype(
-                np.uint8
-            ),
+            lambda x: (np.array(colorsys.hsv_to_rgb(*x)) * 255).astype(np.uint8),
             HSV_tuples,
         )
     )
@@ -90,9 +88,7 @@ class InstanceSegmentation(pl.LightningModule):
         aux_weight_dict = {}
         for i in range(self.model.num_levels * self.model.num_decoders):
             if i not in self.config.general.ignore_mask_idx:
-                aux_weight_dict.update(
-                    {k + f"_{i}": v for k, v in weight_dict.items()}
-                )
+                aux_weight_dict.update({k + f"_{i}": v for k, v in weight_dict.items()})
             else:
                 aux_weight_dict.update(
                     {k + f"_{i}": 0.0 for k, v in weight_dict.items()}
@@ -113,9 +109,7 @@ class InstanceSegmentation(pl.LightningModule):
         # misc
         self.labels_info = dict()
 
-    def forward(
-        self, x, point2segment=None, raw_coordinates=None, is_eval=False
-    ):
+    def forward(self, x, point2segment=None, raw_coordinates=None, is_eval=False):
         with self.optional_freeze():
             x = self.model(
                 x,
@@ -140,7 +134,6 @@ class InstanceSegmentation(pl.LightningModule):
         if self.config.data.add_raw_coordinates:
             raw_coordinates = data.features[:, -3:]
             data.features = data.features[:, :-3]
-
         data = ME.SparseTensor(
             coordinates=data.coordinates,
             features=data.features,
@@ -150,17 +143,12 @@ class InstanceSegmentation(pl.LightningModule):
         try:
             output = self.forward(
                 data,
-                point2segment=[
-                    target[i]["point2segment"] for i in range(len(target))
-                ],
+                point2segment=[target[i]["point2segment"] for i in range(len(target))],
                 raw_coordinates=raw_coordinates,
             )
         except RuntimeError as run_err:
             print(run_err)
-            if (
-                "only a single point gives nans in cross-attention"
-                == run_err.args[0]
-            ):
+            if "only a single point gives nans in cross-attention" == run_err.args[0]:
                 return None
             else:
                 raise run_err
@@ -184,9 +172,7 @@ class InstanceSegmentation(pl.LightningModule):
                 # remove this loss if not specified in `weight_dict`
                 losses.pop(k)
 
-        logs = {
-            f"train_{k}": v.detach().cpu().item() for k, v in losses.items()
-        }
+        logs = {f"train_{k}": v.detach().cpu().item() for k, v in losses.items()}
 
         logs["train_mean_loss_ce"] = statistics.mean(
             [item for item in [v for k, v in logs.items() if "loss_ce" in k]]
@@ -234,9 +220,7 @@ class InstanceSegmentation(pl.LightningModule):
                     )
 
     def training_epoch_end(self, outputs):
-        train_loss = sum([out["loss"].cpu().item() for out in outputs]) / len(
-            outputs
-        )
+        train_loss = sum([out["loss"].cpu().item() for out in outputs]) / len(outputs)
         results = {"train_loss_mean": train_loss}
         self.log_dict(results)
 
@@ -269,11 +253,7 @@ class InstanceSegmentation(pl.LightningModule):
 
         if "labels" in target_full:
             instances_colors = torch.from_numpy(
-                np.vstack(
-                    get_evenly_distributed_colors(
-                        target_full["labels"].shape[0]
-                    )
-                )
+                np.vstack(get_evenly_distributed_colors(target_full["labels"].shape[0]))
             )
             for instance_counter, (label, mask) in enumerate(
                 zip(target_full["labels"], target_full["masks"])
@@ -288,12 +268,8 @@ class InstanceSegmentation(pl.LightningModule):
                     continue
 
                 gt_pcd_pos.append(mask_coords)
-                mask_coords_min = full_res_coords[
-                    mask_tmp.astype(bool), :
-                ].min(axis=0)
-                mask_coords_max = full_res_coords[
-                    mask_tmp.astype(bool), :
-                ].max(axis=0)
+                mask_coords_min = full_res_coords[mask_tmp.astype(bool), :].min(axis=0)
+                mask_coords_max = full_res_coords[mask_tmp.astype(bool), :].max(axis=0)
                 size = mask_coords_max - mask_coords_min
                 mask_coords_middle = mask_coords_min + size / 2
 
@@ -316,9 +292,7 @@ class InstanceSegmentation(pl.LightningModule):
                     .repeat(gt_pcd_pos[-1].shape[0], 1)
                 )
 
-                gt_pcd_normals.append(
-                    original_normals[mask_tmp.astype(bool), :]
-                )
+                gt_pcd_normals.append(original_normals[mask_tmp.astype(bool), :])
 
             gt_pcd_pos = np.concatenate(gt_pcd_pos)
             gt_pcd_normals = np.concatenate(gt_pcd_normals)
@@ -374,23 +348,15 @@ class InstanceSegmentation(pl.LightningModule):
         for did in range(len(sorted_masks)):
             instances_colors = torch.from_numpy(
                 np.vstack(
-                    get_evenly_distributed_colors(
-                        max(1, sorted_masks[did].shape[1])
-                    )
+                    get_evenly_distributed_colors(max(1, sorted_masks[did].shape[1]))
                 )
             )
 
             for i in reversed(range(sorted_masks[did].shape[1])):
-                coords = full_res_coords[
-                    sorted_masks[did][:, i].astype(bool), :
-                ]
+                coords = full_res_coords[sorted_masks[did][:, i].astype(bool), :]
 
-                mask_coords = full_res_coords[
-                    sorted_masks[did][:, i].astype(bool), :
-                ]
-                mask_normals = original_normals[
-                    sorted_masks[did][:, i].astype(bool), :
-                ]
+                mask_coords = full_res_coords[sorted_masks[did][:, i].astype(bool), :]
+                mask_normals = original_normals[sorted_masks[did][:, i].astype(bool), :]
 
                 label = sort_classes[did][i]
 
@@ -437,9 +403,7 @@ class InstanceSegmentation(pl.LightningModule):
                     point_size=point_size,
                 )
 
-        v.save(
-            f"{self.config['general']['save_dir']}/visualizations/{file_name}"
-        )
+        v.save(f"{self.config['general']['save_dir']}/visualizations/{file_name}")
 
     def eval_step(self, batch, batch_idx):
         data, target, file_names = batch
@@ -474,18 +438,13 @@ class InstanceSegmentation(pl.LightningModule):
         try:
             output = self.forward(
                 data,
-                point2segment=[
-                    target[i]["point2segment"] for i in range(len(target))
-                ],
+                point2segment=[target[i]["point2segment"] for i in range(len(target))],
                 raw_coordinates=raw_coordinates,
                 is_eval=True,
             )
         except RuntimeError as run_err:
             print(run_err)
-            if (
-                "only a single point gives nans in cross-attention"
-                == run_err.args[0]
-            ):
+            if "only a single point gives nans in cross-attention" == run_err.args[0]:
                 return None
             else:
                 raise run_err
@@ -495,9 +454,7 @@ class InstanceSegmentation(pl.LightningModule):
                 torch.use_deterministic_algorithms(False)
 
             try:
-                losses = self.criterion(
-                    output, target, mask_type=self.mask_type
-                )
+                losses = self.criterion(output, target, mask_type=self.mask_type)
             except ValueError as val_err:
                 print(f"ValueError: {val_err}")
                 print(f"data shape: {data.shape}")
@@ -518,9 +475,7 @@ class InstanceSegmentation(pl.LightningModule):
                 torch.use_deterministic_algorithms(True)
 
         if self.config.general.save_visualizations:
-            backbone_features = (
-                output["backbone_features"].F.detach().cpu().numpy()
-            )
+            backbone_features = output["backbone_features"].F.detach().cpu().numpy()
             from sklearn import decomposition
 
             pca = decomposition.PCA(n_components=3)
@@ -543,15 +498,13 @@ class InstanceSegmentation(pl.LightningModule):
             original_normals,
             raw_coordinates,
             data_idx,
-            backbone_features=rescaled_pca
-            if self.config.general.save_visualizations
-            else None,
+            backbone_features=(
+                rescaled_pca if self.config.general.save_visualizations else None
+            ),
         )
 
         if self.config.data.test_mode != "test":
-            return {
-                f"val_{k}": v.detach().cpu().item() for k, v in losses.items()
-            }
+            return {f"val_{k}": v.detach().cpu().item() for k, v in losses.items()}
         else:
             return 0.0
 
@@ -564,13 +517,9 @@ class InstanceSegmentation(pl.LightningModule):
         mask = mask.detach().cpu()[inverse_map]  # full res
 
         if self.eval_on_segments and is_heatmap == False:
-            mask = scatter_mean(
-                mask, point2segment_full, dim=0
-            )  # full res segments
+            mask = scatter_mean(mask, point2segment_full, dim=0)  # full res segments
             mask = (mask > 0.5).float()
-            mask = mask.detach().cpu()[
-                point2segment_full.cpu()
-            ]  # full res points
+            mask = mask.detach().cpu()[point2segment_full.cpu()]  # full res points
 
         return mask
 
@@ -634,13 +583,9 @@ class InstanceSegmentation(pl.LightningModule):
             }
         )
 
-        prediction[self.decoder_id][
-            "pred_logits"
-        ] = torch.functional.F.softmax(
+        prediction[self.decoder_id]["pred_logits"] = torch.functional.F.softmax(
             prediction[self.decoder_id]["pred_logits"], dim=-1
-        )[
-            ..., :-1
-        ]
+        )[..., :-1]
 
         all_pred_classes = list()
         all_pred_masks = list()
@@ -659,9 +604,7 @@ class InstanceSegmentation(pl.LightningModule):
                     )
                 else:
                     masks = (
-                        prediction[self.decoder_id]["pred_masks"][bid]
-                        .detach()
-                        .cpu()
+                        prediction[self.decoder_id]["pred_masks"][bid].detach().cpu()
                     )
 
                 if self.config.general.use_dbscan:
@@ -691,9 +634,7 @@ class InstanceSegmentation(pl.LightningModule):
                             )
 
                             new_mask = torch.zeros(curr_masks.shape, dtype=int)
-                            new_mask[curr_masks] = (
-                                torch.from_numpy(clusters) + 1
-                            )
+                            new_mask[curr_masks] = torch.from_numpy(clusters) + 1
 
                             for cluster_id in np.unique(clusters):
                                 original_pred_masks = masks[:, curr_query]
@@ -703,9 +644,9 @@ class InstanceSegmentation(pl.LightningModule):
                                         * (new_mask == cluster_id + 1)
                                     )
                                     new_preds["pred_logits"].append(
-                                        prediction[self.decoder_id][
-                                            "pred_logits"
-                                        ][bid, curr_query]
+                                        prediction[self.decoder_id]["pred_logits"][
+                                            bid, curr_query
+                                        ]
                                     )
 
                     scores, masks, classes, heatmap = self.get_mask_and_scores(
@@ -716,13 +657,9 @@ class InstanceSegmentation(pl.LightningModule):
                     )
                 else:
                     scores, masks, classes, heatmap = self.get_mask_and_scores(
-                        prediction[self.decoder_id]["pred_logits"][bid]
-                        .detach()
-                        .cpu(),
+                        prediction[self.decoder_id]["pred_logits"][bid].detach().cpu(),
                         masks,
-                        prediction[self.decoder_id]["pred_logits"][bid].shape[
-                            0
-                        ],
+                        prediction[self.decoder_id]["pred_logits"][bid].shape[0],
                         self.model.num_classes - 1,
                     )
 
@@ -816,25 +753,18 @@ class InstanceSegmentation(pl.LightningModule):
         if self.validation_dataset.dataset_name == "scannet200":
             all_pred_classes[bid][all_pred_classes[bid] == 0] = -1
             if self.config.data.test_mode != "test":
-                target_full_res[bid]["labels"][
-                    target_full_res[bid]["labels"] == 0
-                ] = -1
+                target_full_res[bid]["labels"][target_full_res[bid]["labels"] == 0] = -1
 
         for bid in range(len(prediction[self.decoder_id]["pred_masks"])):
-            all_pred_classes[
-                bid
-            ] = self.validation_dataset._remap_model_output(
+            all_pred_classes[bid] = self.validation_dataset._remap_model_output(
                 all_pred_classes[bid].cpu() + label_offset
             )
 
-            if (
-                self.config.data.test_mode != "test"
-                and len(target_full_res) != 0
-            ):
-                target_full_res[bid][
-                    "labels"
-                ] = self.validation_dataset._remap_model_output(
-                    target_full_res[bid]["labels"].cpu() + label_offset
+            if self.config.data.test_mode != "test" and len(target_full_res) != 0:
+                target_full_res[bid]["labels"] = (
+                    self.validation_dataset._remap_model_output(
+                        target_full_res[bid]["labels"].cpu() + label_offset
+                    )
                 )
 
                 # PREDICTION BOX
@@ -847,9 +777,9 @@ class InstanceSegmentation(pl.LightningModule):
                     ]
                     if obj_coords.shape[0] > 0:
                         obj_center = obj_coords.mean(axis=0)
-                        obj_axis_length = obj_coords.max(
+                        obj_axis_length = obj_coords.max(axis=0) - obj_coords.min(
                             axis=0
-                        ) - obj_coords.min(axis=0)
+                        )
 
                         bbox = np.concatenate((obj_center, obj_axis_length))
 
@@ -878,9 +808,9 @@ class InstanceSegmentation(pl.LightningModule):
                     ]
                     if obj_coords.shape[0] > 0:
                         obj_center = obj_coords.mean(axis=0)
-                        obj_axis_length = obj_coords.max(
+                        obj_axis_length = obj_coords.max(axis=0) - obj_coords.min(
                             axis=0
-                        ) - obj_coords.min(axis=0)
+                        )
 
                         bbox = np.concatenate((obj_center, obj_axis_length))
                         bbox_data.append(
@@ -910,9 +840,9 @@ class InstanceSegmentation(pl.LightningModule):
 
             if self.config.general.save_visualizations:
                 if "cond_inner" in self.test_dataset.data[idx[bid]]:
-                    target_full_res[bid]["masks"] = target_full_res[bid][
-                        "masks"
-                    ][:, self.test_dataset.data[idx[bid]]["cond_inner"]]
+                    target_full_res[bid]["masks"] = target_full_res[bid]["masks"][
+                        :, self.test_dataset.data[idx[bid]]["cond_inner"]
+                    ]
                     self.save_visualizations(
                         target_full_res[bid],
                         full_res_coords[bid][
@@ -933,11 +863,13 @@ class InstanceSegmentation(pl.LightningModule):
                                 self.test_dataset.data[idx[bid]]["cond_inner"]
                             ]
                         ],
-                        query_pos=all_query_pos[bid][
-                            self.test_dataset.data[idx[bid]]["cond_inner"]
-                        ]
-                        if len(all_query_pos) > 0
-                        else None,
+                        query_pos=(
+                            all_query_pos[bid][
+                                self.test_dataset.data[idx[bid]]["cond_inner"]
+                            ]
+                            if len(all_query_pos) > 0
+                            else None
+                        ),
                         backbone_features=backbone_features[
                             self.test_dataset.data[idx[bid]]["cond_inner"]
                         ],
@@ -954,9 +886,9 @@ class InstanceSegmentation(pl.LightningModule):
                         original_normals[bid],
                         [self.preds[file_names[bid]]["pred_scores"]],
                         sorted_heatmaps=[all_heatmaps[bid]],
-                        query_pos=all_query_pos[bid]
-                        if len(all_query_pos) > 0
-                        else None,
+                        query_pos=(
+                            all_query_pos[bid] if len(all_query_pos) > 0 else None
+                        ),
                         backbone_features=backbone_features,
                         point_size=self.config.general.visualization_point_size,
                     )
@@ -965,9 +897,7 @@ class InstanceSegmentation(pl.LightningModule):
                 if self.validation_dataset.dataset_name == "stpls3d":
                     scan_id, _, _, crop_id = file_names[bid].split("_")
                     crop_id = int(crop_id.replace(".txt", ""))
-                    file_name = (
-                        f"{scan_id}_points_GTv3_0{crop_id}_inst_nostuff"
-                    )
+                    file_name = f"{scan_id}_points_GTv3_0{crop_id}_inst_nostuff"
 
                     self.export(
                         self.preds[file_names[bid]]["pred_masks"],
@@ -1009,15 +939,15 @@ class InstanceSegmentation(pl.LightningModule):
 
         for class_id in box_ap_50[-1].keys():
             class_name = self.train_dataset.label_info[class_id]["name"]
-            ap_results[f"{log_prefix}_{class_name}_val_box_ap_50"] = box_ap_50[
-                -1
-            ][class_id]
+            ap_results[f"{log_prefix}_{class_name}_val_box_ap_50"] = box_ap_50[-1][
+                class_id
+            ]
 
         for class_id in box_ap_25[-1].keys():
             class_name = self.train_dataset.label_info[class_id]["name"]
-            ap_results[f"{log_prefix}_{class_name}_val_box_ap_25"] = box_ap_25[
-                -1
-            ][class_id]
+            ap_results[f"{log_prefix}_{class_name}_val_box_ap_25"] = box_ap_25[-1][
+                class_id
+            ]
 
         root_path = f"eval_output"
         base_path = f"{root_path}/instance_evaluation_{self.config.general.experiment_name}_{self.current_epoch}"
@@ -1042,9 +972,7 @@ class InstanceSegmentation(pl.LightningModule):
             if self.validation_dataset.dataset_name == "s3dis":
                 new_preds = {}
                 for key in self.preds.keys():
-                    new_preds[
-                        key.replace(f"Area_{self.config.general.area}_", "")
-                    ] = {
+                    new_preds[key.replace(f"Area_{self.config.general.area}_", "")] = {
                         "pred_classes": self.preds[key]["pred_classes"] + 1,
                         "pred_masks": self.preds[key]["pred_masks"],
                         "pred_scores": self.preds[key]["pred_scores"],
@@ -1080,46 +1008,36 @@ class InstanceSegmentation(pl.LightningModule):
 
                     if self.validation_dataset.dataset_name == "scannet200":
                         if class_name in VALID_CLASS_IDS_200_VALIDATION:
-                            ap_results[
-                                f"{log_prefix}_{class_name}_val_ap"
-                            ] = float(ap)
-                            ap_results[
-                                f"{log_prefix}_{class_name}_val_ap_50"
-                            ] = float(ap_50)
-                            ap_results[
-                                f"{log_prefix}_{class_name}_val_ap_25"
-                            ] = float(ap_25)
+                            ap_results[f"{log_prefix}_{class_name}_val_ap"] = float(ap)
+                            ap_results[f"{log_prefix}_{class_name}_val_ap_50"] = float(
+                                ap_50
+                            )
+                            ap_results[f"{log_prefix}_{class_name}_val_ap_25"] = float(
+                                ap_25
+                            )
 
                             if class_name in HEAD_CATS_SCANNET_200:
                                 head_results.append(
-                                    np.array(
-                                        (float(ap), float(ap_50), float(ap_25))
-                                    )
+                                    np.array((float(ap), float(ap_50), float(ap_25)))
                                 )
                             elif class_name in COMMON_CATS_SCANNET_200:
                                 common_results.append(
-                                    np.array(
-                                        (float(ap), float(ap_50), float(ap_25))
-                                    )
+                                    np.array((float(ap), float(ap_50), float(ap_25)))
                                 )
                             elif class_name in TAIL_CATS_SCANNET_200:
                                 tail_results.append(
-                                    np.array(
-                                        (float(ap), float(ap_50), float(ap_25))
-                                    )
+                                    np.array((float(ap), float(ap_50), float(ap_25)))
                                 )
                             else:
                                 assert (False, "class not known!")
                     else:
-                        ap_results[
-                            f"{log_prefix}_{class_name}_val_ap"
-                        ] = float(ap)
-                        ap_results[
-                            f"{log_prefix}_{class_name}_val_ap_50"
-                        ] = float(ap_50)
-                        ap_results[
-                            f"{log_prefix}_{class_name}_val_ap_25"
-                        ] = float(ap_25)
+                        ap_results[f"{log_prefix}_{class_name}_val_ap"] = float(ap)
+                        ap_results[f"{log_prefix}_{class_name}_val_ap_50"] = float(
+                            ap_50
+                        )
+                        ap_results[f"{log_prefix}_{class_name}_val_ap_25"] = float(
+                            ap_25
+                        )
 
             if self.validation_dataset.dataset_name == "scannet200":
                 head_results = np.stack(head_results)
@@ -1130,35 +1048,17 @@ class InstanceSegmentation(pl.LightningModule):
                 mean_common_results = np.nanmean(common_results, axis=0)
                 mean_head_results = np.nanmean(head_results, axis=0)
 
-                ap_results[
-                    f"{log_prefix}_mean_tail_ap_25"
-                ] = mean_tail_results[0]
-                ap_results[
-                    f"{log_prefix}_mean_common_ap_25"
-                ] = mean_common_results[0]
-                ap_results[
-                    f"{log_prefix}_mean_head_ap_25"
-                ] = mean_head_results[0]
+                ap_results[f"{log_prefix}_mean_tail_ap_25"] = mean_tail_results[0]
+                ap_results[f"{log_prefix}_mean_common_ap_25"] = mean_common_results[0]
+                ap_results[f"{log_prefix}_mean_head_ap_25"] = mean_head_results[0]
 
-                ap_results[
-                    f"{log_prefix}_mean_tail_ap_50"
-                ] = mean_tail_results[1]
-                ap_results[
-                    f"{log_prefix}_mean_common_ap_50"
-                ] = mean_common_results[1]
-                ap_results[
-                    f"{log_prefix}_mean_head_ap_50"
-                ] = mean_head_results[1]
+                ap_results[f"{log_prefix}_mean_tail_ap_50"] = mean_tail_results[1]
+                ap_results[f"{log_prefix}_mean_common_ap_50"] = mean_common_results[1]
+                ap_results[f"{log_prefix}_mean_head_ap_50"] = mean_head_results[1]
 
-                ap_results[
-                    f"{log_prefix}_mean_tail_ap_25"
-                ] = mean_tail_results[2]
-                ap_results[
-                    f"{log_prefix}_mean_common_ap_25"
-                ] = mean_common_results[2]
-                ap_results[
-                    f"{log_prefix}_mean_head_ap_25"
-                ] = mean_head_results[2]
+                ap_results[f"{log_prefix}_mean_tail_ap_25"] = mean_tail_results[2]
+                ap_results[f"{log_prefix}_mean_common_ap_25"] = mean_common_results[2]
+                ap_results[f"{log_prefix}_mean_head_ap_25"] = mean_head_results[2]
 
                 overall_ap_results = np.nanmean(
                     np.vstack((head_results, common_results, tail_results)),
@@ -1175,11 +1075,7 @@ class InstanceSegmentation(pl.LightningModule):
                 }
             else:
                 mean_ap = statistics.mean(
-                    [
-                        item
-                        for key, item in ap_results.items()
-                        if key.endswith("val_ap")
-                    ]
+                    [item for key, item in ap_results.items() if key.endswith("val_ap")]
                 )
                 mean_ap_50 = statistics.mean(
                     [
@@ -1266,15 +1162,11 @@ class InstanceSegmentation(pl.LightningModule):
         return [optimizer], [scheduler_config]
 
     def prepare_data(self):
-        self.train_dataset = hydra.utils.instantiate(
-            self.config.data.train_dataset
-        )
+        self.train_dataset = hydra.utils.instantiate(self.config.data.train_dataset)
         self.validation_dataset = hydra.utils.instantiate(
             self.config.data.validation_dataset
         )
-        self.test_dataset = hydra.utils.instantiate(
-            self.config.data.test_dataset
-        )
+        self.test_dataset = hydra.utils.instantiate(self.config.data.test_dataset)
         self.labels_info = self.train_dataset.label_info
 
     def train_dataloader(self):
