@@ -2,7 +2,7 @@
 # embedded options to bsub - start with #BSUB
 # -- our name ---
 #BSUB -J gpuCorePython 
-#BSUB -q gpuv100
+#BSUB -q gpua100
 ### request the number of GPUs
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### request the number of CPU cores (at least 4x the number of GPUs)
