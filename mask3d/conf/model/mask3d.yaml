@@ -4,7 +4,7 @@ _target_: mask3d.models.Mask3D
 # transformer parameters
 hidden_dim: 128
 dim_feedforward: 1024
-num_queries: 20 #100
+num_queries: 50 #100
 num_heads: 8
 num_decoders: 3
 dropout: 0.0

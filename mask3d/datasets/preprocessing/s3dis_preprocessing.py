@@ -27,34 +27,15 @@ class S3DISPreprocessing(BasePreprocessing):
         super().__init__(data_dir, save_dir, modes, n_jobs)
 
         self.class_map = {
-            "ceiling": 0,
-            "floor": 1,
-            "wall": 2,  # cylinder
-            "beam": 3,
-            "column": 4,  # cable
-            "window": 5,
-            "door": 6,
-            "table": 7,
-            "chair": 8,
-            "sofa": 9,
-            "bookcase": 10,
-            "board": 11,  # ladder
-            "clutter": 12,
-            "stairs": 12,  # stairs are also mapped to clutter
+            "wall": 0,  # cylinder
+            "column": 1,  # cable
+            "board": 2,  # ladder
+            "clutter": 3, #noise
         }
 
         self.color_map = [
-            [0, 255, 0],  # ceiling
-            [0, 0, 255],  # floor
             [0, 255, 255],  # wall
-            [255, 255, 0],  # beam
             [255, 0, 255],  # column
-            [100, 100, 255],  # window
-            [200, 200, 100],  # door
-            [170, 120, 200],  # table
-            [255, 0, 0],  # chair
-            [200, 100, 100],  # sofa
-            [10, 200, 100],  # bookcase
             [200, 200, 200],  # board
             [50, 50, 50],
         ]  # clutter

@@ -65,7 +65,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         # # model
         cfg.model.num_queries = 150
     if dataset_name == "s3dis":
-        cfg.general.num_targets = 14
+        cfg.general.num_targets = 10
         cfg.general.train_mode = False
         cfg.general.eval_on_segments = True
         cfg.general.topk_per_image = 300
@@ -73,7 +73,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.general.dbscan_eps = 0.95
         cfg.general.export_threshold = 0.001
 
-        cfg.data.num_labels = 13
+        cfg.data.num_labels = 4
         cfg.data.add_colors = False
         cfg.data.add_normals = False
         cfg.data.in_channels = 3
@@ -269,7 +269,7 @@ def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
             [0, 0, 0],  # "window",
             [1, 1, 1],  # "door",
             [0.5, 0.5, 0.5],  # "table",
-            [0.5, 0, 1],  # "chair",
+            [0.5, 0.5, 1],  # "chair",
             [0, 0.5, 0],  # "sofa",
             [0.5, 0, 0],  # "bookcase",
             [1, 0, 0],  # "board",
