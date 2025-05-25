@@ -57,7 +57,7 @@ cd third_party/pointnet2
 #python setup.py install
 
 cd ../../
-#pip install pytorch-lightning==1.7.2
+pip install pytorch-lightning==1.7.2
 
 pip install .
 
@@ -76,9 +76,9 @@ CURR_QUERY=50
 
 
 
-python -m datasets.preprocessing.s3dis_preprocessing preprocess \
-    --data_dir="data/dataset" \
-    --save_dir="data/processed/s3dis"
+# python -m datasets.preprocessing.s3dis_preprocessing preprocess \
+#     --data_dir="data/dataset" \
+#     --save_dir="data/processed/s3dis"
 
 
 python main_instance_segmentation.py \
