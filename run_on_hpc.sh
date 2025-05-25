@@ -86,7 +86,7 @@ python main_instance_segmentation.py \
   general.experiment_name="area${CURR_AREA}_from_scratch" \
   data.batch_size=4 \
   data/datasets=s3dis \
-  general.num_targets=5 \ 
+  general.num_targets=5 \
   trainer.max_epochs=1001 \
   data.num_labels=4 \
   general.area=${CURR_AREA} \
