@@ -34,7 +34,7 @@ export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 
 conda activate mask3d_cuda113
 #conda env update --file environment.yml
-pip uninstall torch
+pip uninstall torch -y
 pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
 #pip install torch-scatter -f https://data.pyg.org/whl/torch-1.12.1+cu113.html
 #pip install 'git+https://github.com/facebookresearch/detectron2.git@710e7795d0eeadf9def0e7ef957eea13532e34cf' --no-deps
