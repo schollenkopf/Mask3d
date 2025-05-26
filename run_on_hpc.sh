@@ -85,7 +85,7 @@ CURR_QUERY=50
 python main_instance_segmentation.py \
   general.project_name="s3dis" \
   general.experiment_name="area${CURR_AREA}_from_scratch" \
-  data.batch_size=4 \
+  data.batch_size=12 \
   data/datasets=s3dis \
   general.num_targets=5 \
   trainer.max_epochs=1001 \

@@ -1148,6 +1148,9 @@ class InstanceSegmentation(pl.LightningModule):
             self.config.optimizer, params=self.parameters()
         )
         if "steps_per_epoch" in self.config.scheduler.scheduler.keys():
+            print("len dataloader: ",len(
+                self.train_dataloader()
+            ))
             self.config.scheduler.scheduler.steps_per_epoch = len(
                 self.train_dataloader()
             )
