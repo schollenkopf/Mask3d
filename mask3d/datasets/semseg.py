@@ -117,16 +117,7 @@ class SemanticSegmentationDataset(Dataset):
                 0: [0, 255, 0],  # ceiling
                 1: [0, 0, 255],  # floor
                 2: [0, 255, 255],  # wall
-                3: [255, 255, 0],  # beam
-                4: [255, 0, 255],  # column
-                5: [100, 100, 255],  # window
-                6: [200, 200, 100],  # door
-                7: [170, 120, 200],  # table
-                8: [255, 0, 0],  # chair
-                9: [200, 100, 100],  # sofa
-                10: [10, 200, 100],  # bookcase
-                11: [200, 200, 200],  # board
-                12: [50, 50, 50],  # clutter
+                3: [255, 255, 0]
             }
         else:
             assert False, "dataset not known"
