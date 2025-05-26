@@ -2,7 +2,7 @@
 # embedded options to bsub - start with #BSUB
 # -- our name ---
 #BSUB -J gpuCorePython 
-#BSUB -q gpua100
+#BSUB -q gpuv100
 ### request the number of GPUs
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### request the number of CPU cores (at least 4x the number of GPUs)
@@ -57,7 +57,7 @@ cd third_party/pointnet2
 #python setup.py install
 
 cd ../../
-pip install pytorch-lightning==1.7.2
+pip install pytorch-lightning==1.7.0
 
 pip install .
 
