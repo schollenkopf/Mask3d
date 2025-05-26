@@ -21,9 +21,10 @@
 #BSUB -e Output_%J.err
 # -- estimated wall clock time (execution time): hh:mm -- 
 #BSUB -W 24:00 
-
+nvidia-smi
 module load gcc/9.5.0-binutils-2.38
 module load cuda/11.3
+/appl/cuda/11.3.0/samples/bin/x86_64/linux/release/deviceQuery
 
 source ../../miniconda3/bin/activate
 rm -rf ../../miniconda3/envs/mask3d_cuda113/lib/python3.10/site-packages/mask3d*
