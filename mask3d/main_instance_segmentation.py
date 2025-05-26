@@ -15,6 +15,7 @@ from utils.utils import (
     load_backbone_checkpoint_with_missing_or_exsessive_keys,
 )
 from pytorch_lightning import Trainer, seed_everything
+import torch
 
 
 def get_parameters(cfg: DictConfig):
@@ -106,4 +107,5 @@ def main(cfg: DictConfig):
 
 if __name__ == "__main__":
     print(os.environ["CUDA_VISIBLE_DEVICES"])
+    print(torch.cuda.device_count())
     main()
