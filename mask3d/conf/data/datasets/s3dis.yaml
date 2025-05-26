@@ -42,7 +42,7 @@ validation_dataset:
   volume_augmentations_path: null
   label_db_filepath: data/processed/s3dis/label_database.yaml
   color_mean_std: data/processed/s3dis/color_mean_std.yaml
-  data_percent: 0.02
+  data_percent: 1.0
   mode: ${data.validation_mode}
   ignore_label: ${data.ignore_label}
   num_labels: ${data.num_labels}

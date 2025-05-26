@@ -77,22 +77,22 @@ CURR_QUERY=50
 
 
 
-# python -m datasets.preprocessing.s3dis_preprocessing preprocess \
-#     --data_dir="data/dataset" \
-#     --save_dir="data/processed/s3dis"
+python -m datasets.preprocessing.s3dis_preprocessing preprocess \
+    --data_dir="data/dataset" \
+    --save_dir="data/processed/s3dis"
 
 
 python main_instance_segmentation.py \
   general.project_name="s3dis" \
   general.experiment_name="area${CURR_AREA}_from_scratch" \
-  data.batch_size=12 \
+  data.batch_size=16 \
   data/datasets=s3dis \
   general.num_targets=5 \
-  trainer.max_epochs=1001 \
+  trainer.max_epochs=600 \
   data.num_labels=4 \
   general.area=${CURR_AREA} \
   model.num_queries=${CURR_QUERY} \
-  trainer.check_val_every_n_epoch=30 \
+  trainer.check_val_every_n_epoch=15 \
 #   general.checkpoint="../checkpoints/area3_from_scratch.ckpt" \
 #   optimizer.lr=0.00001
 #   general.topk_per_image=${CURR_TOPK} \
