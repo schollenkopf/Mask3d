@@ -68,7 +68,7 @@ pip install .
 
 cd mask3d
 
-CURR_AREA=1  # set the area number accordingly [1,6]
+CURR_AREA=2  # set the area number accordingly [1,6] seems like its just validated on this and trained on another
 CURR_DBSCAN=0.6
 CURR_TOPK=-1
 CURR_QUERY=50
