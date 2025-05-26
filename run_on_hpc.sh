@@ -2,7 +2,7 @@
 # embedded options to bsub - start with #BSUB
 # -- our name ---
 #BSUB -J gpuCorePython 
-#BSUB -q gpua100
+#BSUB -q gpuv100
 ### request the number of GPUs
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### request the number of CPU cores (at least 4x the number of GPUs)
@@ -11,7 +11,6 @@
 #BSUB -R "span[hosts=1]"
 ### we need to request CPU memory, too (note: this is per CPU core)
 #BSUB -R "rusage[mem=4GB]"
-#BSUB -R "select[gpu40gb]"
 #BSUB -B
 # -- Notify me by email when execution ends   --
 #BSUB -N
@@ -27,7 +26,7 @@ module load gcc/9.5.0-binutils-2.38
 module load cuda/11.3
 
 source ../../miniconda3/bin/activate
-rm -rf ../../miniconda3/envs/mask3d_cuda113/lib/python3.10/site-packages/mask3d*
+# rm -rf ../../miniconda3/envs/mask3d_cuda113/lib/python3.10/site-packages/mask3d*
 rm -rf mask3d/saved/*
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 
@@ -60,7 +59,7 @@ cd third_party/pointnet2
 cd ../../
 pip install pytorch-lightning==1.7.2
 
-pip install .
+# pip install .
 
 #pip install typing_extensions==4.11.0
 # python infere.py
