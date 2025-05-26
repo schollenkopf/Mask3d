@@ -105,5 +105,5 @@ def main(cfg: DictConfig):
 
 
 if __name__ == "__main__":
-    print("does this priunt")
+    print(os.environ["CUDA_VISIBLE_DEVICES"])
     main()
