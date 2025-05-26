@@ -484,21 +484,12 @@ def evaluate(preds: dict, gt_path: str, output_file: str, dataset: str = "scanne
         # global LABEL_TO_ID
 
         CLASS_LABELS = [
-            "ceiling",
-            "floor",
             "wall",
-            "beam",
             "column",
-            "window",
-            "door",
-            "table",
-            "chair",
-            "sofa",
-            "bookcase",
             "board",
             "clutter",
         ]
-        VALID_CLASS_IDS = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+        VALID_CLASS_IDS = np.array([1, 2, 3, 4])
         ID_TO_LABEL = {}
         LABEL_TO_ID = {}
         for i in range(len(VALID_CLASS_IDS)):
