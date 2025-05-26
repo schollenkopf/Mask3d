@@ -26,7 +26,7 @@ module load gcc/9.5.0-binutils-2.38
 module load cuda/11.3
 
 source ../../miniconda3/bin/activate
-# rm -rf ../../miniconda3/envs/mask3d_cuda113/lib/python3.10/site-packages/mask3d*
+rm -rf ../../miniconda3/envs/mask3d_cuda113/lib/python3.10/site-packages/mask3d*
 rm -rf mask3d/saved/*
 export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 
@@ -34,8 +34,8 @@ export TORCH_CUDA_ARCH_LIST="6.0 6.1 6.2 7.0 7.2 7.5 8.0 8.6"
 
 conda activate mask3d_cuda113
 #conda env update --file environment.yml
-#pip uninstall torch
-#pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
+pip uninstall torch
+pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
 #pip install torch-scatter -f https://data.pyg.org/whl/torch-1.12.1+cu113.html
 #pip install 'git+https://github.com/facebookresearch/detectron2.git@710e7795d0eeadf9def0e7ef957eea13532e34cf' --no-deps
 
@@ -59,7 +59,7 @@ cd third_party/pointnet2
 cd ../../
 pip install pytorch-lightning==1.7.2
 
-# pip install .
+pip install .
 
 #pip install typing_extensions==4.11.0
 # python infere.py
