@@ -93,7 +93,7 @@ python main_instance_segmentation.py \
   data.num_labels=4 \
   general.area=${CURR_AREA} \
   model.num_queries=${CURR_QUERY} \
-  trainer.check_val_every_n_epoch=5 \
+  trainer.check_val_every_n_epoch=1 \
 #   general.checkpoint="../checkpoints/area3_from_scratch.ckpt" \
 #   optimizer.lr=0.00001
 #   general.topk_per_image=${CURR_TOPK} \
