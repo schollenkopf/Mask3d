@@ -34,7 +34,7 @@ for i, filename in enumerate(os.listdir("scans/")):
     save_path_instance = os.path.join(
         "scans/", "instance_" + os.path.splitext(filename)[0] + ".ply"
     )
-    save_colorized_mesh(mesh, instances, save_path_instance, labelMode==False)
+    save_colorized_mesh(mesh, instances, save_path_instance, labelMode=False)
     save_path_label = os.path.join(
         "scans/", "labeled_" + os.path.splitext(filename)[0] + ".ply"
     )
