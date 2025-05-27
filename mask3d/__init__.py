@@ -236,9 +236,9 @@ def map_output_to_pointcloud(
     instances_mapped = np.zeros((len(mesh.vertices), 1))
     instance_id = 1  # Starting instance ID
 
-    for i, (l, c, m) in enumerate(
+    for i, (c,l, m) in enumerate(
         sorted(
-            zip(labels, confidences, instance_masks),
+            zip(confidences, labels, instance_masks),
             key=lambda x: (x[0], x[1]),
             reverse=False,
         )
@@ -274,7 +274,7 @@ def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
 
     # Map colors to the mesh
     vertex_colors = np.zeros((len(mesh.vertices), 3))
-    for i, label in unique_labels:
+    for i, label in enumerate(unique_labels):
         if label:
             vertex_colors[labels_mapped[:, 0] == label] = colors[label]
         else:
