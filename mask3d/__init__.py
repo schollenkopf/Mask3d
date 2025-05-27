@@ -258,7 +258,7 @@ def map_output_to_pointcloud(
     return labels_mapped, instances_mapped
 
 
-def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
+def save_colorized_mesh(mesh, labels_mapped, output_file, labelMode=True):
     colors = np.array(
         [
             [0, 1, 0],  # "wall",
@@ -269,14 +269,14 @@ def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
     )
     unique_labels = np.unique(labels_mapped)
     np.random.seed(42)  # For reproducibility
-    if not label:
+    if not labelMode:
         colors = np.random.rand(len(unique_labels), 3)
 
     # Map colors to the mesh
     vertex_colors = np.zeros((len(mesh.vertices), 3))
     for i, label in enumerate(unique_labels):
-        if label:
-            vertex_colors[labels_mapped[:, 0] == label] = colors[label]
+        if labelMode:
+            vertex_colors[labels_mapped[:, 0] == label] = colors[i]
         else:
             vertex_colors[labels_mapped[:, 0] == label] = colors[i]
 
