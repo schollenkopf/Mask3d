@@ -65,13 +65,13 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         # # model
         cfg.model.num_queries = 150
     if dataset_name == "s3dis":
-        cfg.general.num_targets = 10
+        cfg.general.num_targets = 5
         cfg.general.train_mode = False
         cfg.general.eval_on_segments = True
-        cfg.general.topk_per_image = 300
-        cfg.general.use_dbscan = False
+        cfg.general.topk_per_image = 100
+        cfg.general.use_dbscan = True
         cfg.general.dbscan_eps = 0.95
-        cfg.general.export_threshold = 0.001
+        cfg.general.export_threshold = 0.00001
 
         cfg.data.num_labels = 4
         cfg.data.add_colors = False
@@ -79,7 +79,7 @@ def get_model(checkpoint_path=None, dataset_name="scannet200"):
         cfg.data.in_channels = 3
         cfg.data.test_mode = "test"
 
-        cfg.model.num_queries = 20
+        cfg.model.num_queries = 50
 
     if dataset_name == "scannet":
         cfg.general.num_targets = 19
@@ -176,7 +176,7 @@ def prepare_data(mesh, device):
 
 
 def map_output_to_pointcloud(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.0
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.9
 ):
 
     # parse predictions
@@ -261,17 +261,8 @@ def map_output_to_pointcloud(
 def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
     colors = np.array(
         [
-            [0, 0, 1],  # "ceiling",
-            [0, 0, 0.5],  # "floor",
             [0, 1, 0],  # "wall",
-            [0, 1, 1],  # "beam",
             [1, 0, 1],  # "column",
-            [0, 0, 0],  # "window",
-            [1, 1, 1],  # "door",
-            [0.5, 0.5, 0.5],  # "table",
-            [0.5, 0.5, 1],  # "chair",
-            [0, 0.5, 0],  # "sofa",
-            [0.5, 0, 0],  # "bookcase",
             [1, 0, 0],  # "board",
             [0.5, 0, 1],  # "clutter",
         ]
