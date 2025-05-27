@@ -176,7 +176,7 @@ def prepare_data(mesh, device):
 
 
 def map_output_to_pointcloud(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.9
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.5
 ):
 
     # parse predictions
@@ -267,7 +267,6 @@ def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
             [0.5, 0, 1],  # "clutter",
         ]
     )
-    # Generate unique colors for each instance
     unique_labels = np.unique(labels_mapped)
     np.random.seed(42)  # For reproducibility
     if not label:
@@ -275,8 +274,10 @@ def save_colorized_mesh(mesh, labels_mapped, output_file, label=True):
 
     # Map colors to the mesh
     vertex_colors = np.zeros((len(mesh.vertices), 3))
-    for i, label in enumerate(unique_labels):
-        if label != 0:  # Skip background
+    for i, label in unique_labels:
+        if label:
+            vertex_colors[labels_mapped[:, 0] == label] = colors[label]
+        else:
             vertex_colors[labels_mapped[:, 0] == label] = colors[i]
 
     mesh.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
