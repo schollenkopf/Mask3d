@@ -11,7 +11,7 @@
 #BSUB -R "span[hosts=1]"
 ### we need to request CPU memory, too (note: this is per CPU core)
 #BSUB -R "rusage[mem=4GB]"
-#BSUB -R "select[gpu32gb]"
+
 #BSUB -B
 # -- Notify me by email when execution ends   --
 #BSUB -N
