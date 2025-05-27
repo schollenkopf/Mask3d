@@ -646,7 +646,7 @@ class InstanceSegmentation(pl.LightningModule):
                                             bid, curr_query
                                         ]
                                     )
-                    print(new_preds["pred_logits"].shape)
+                    print(new_preds["pred_logits"])
                     scores, masks, classes, heatmap = self.get_mask_and_scores(
                         torch.stack(new_preds["pred_logits"]).cpu(),
                         torch.stack(new_preds["pred_masks"]).T,
