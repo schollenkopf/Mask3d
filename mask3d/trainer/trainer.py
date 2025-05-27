@@ -618,7 +618,7 @@ class InstanceSegmentation(pl.LightningModule):
                         offset_coords_idx : curr_coords_idx + offset_coords_idx
                     ]
                     offset_coords_idx += curr_coords_idx
-                    print("mask shape",masks.shape)
+                    # print("mask shape",masks.shape)
                     for curr_query in range(masks.shape[1]):
                         curr_masks = masks[:, curr_query] > 0
 
@@ -635,7 +635,7 @@ class InstanceSegmentation(pl.LightningModule):
 
                             new_mask = torch.zeros(curr_masks.shape, dtype=int)
                             new_mask[curr_masks] = torch.from_numpy(clusters) + 1
-                            print(np.unique(clusters))
+                            # print(np.unique(clusters))
                             for cluster_id in np.unique(clusters):
                                 original_pred_masks = masks[:, curr_query]
                                 if cluster_id != -1:
@@ -648,13 +648,19 @@ class InstanceSegmentation(pl.LightningModule):
                                             bid, curr_query
                                         ]
                                     )
-                    print("pred logits",new_preds["pred_logits"])
-                    scores, masks, classes, heatmap = self.get_mask_and_scores(
-                        torch.stack(new_preds["pred_logits"]).cpu(),
-                        torch.stack(new_preds["pred_masks"]).T,
-                        len(new_preds["pred_logits"]),
-                        self.model.num_classes - 1,
-                    )
+                    # print("pred logits",new_preds["pred_logits"])
+                    if new_preds["pred_logits"]:
+                        scores, masks, classes, heatmap = self.get_mask_and_scores(
+                            torch.stack(new_preds["pred_logits"]).cpu(),
+                            torch.stack(new_preds["pred_masks"]).T,
+                            len(new_preds["pred_logits"]),
+                            self.model.num_classes - 1,
+                        )
+                    else:
+                        scores = torch.tensor([])  # Empty tensor to avoid .numpy() error later
+                        masks = torch.zeros((raw_coords.shape[0], 0), dtype=torch.bool)  # no masks
+                        classes = torch.tensor([], dtype=torch.int64)
+                        heatmap = torch.zeros_like(masks, dtype=torch.float32)
                 else:
                     scores, masks, classes, heatmap = self.get_mask_and_scores(
                         prediction[self.decoder_id]["pred_logits"][bid].detach().cpu(),
