@@ -90,7 +90,7 @@ python main_instance_segmentation.py \
   data/datasets=s3dis \
   general.num_targets=5 \
   trainer.max_epochs=180 \
-  general.checkpoint = ../checkpoints/last-epoch.ckpt
+  general.checkpoint = ../checkpoints/last-epoch200its.ckpt
   data.num_labels=4 \
   general.area=${CURR_AREA} \
   model.num_queries=${CURR_QUERY} \
