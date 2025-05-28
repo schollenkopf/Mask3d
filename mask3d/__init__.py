@@ -176,7 +176,7 @@ def prepare_data(mesh, device):
 
 
 def map_output_to_pointcloud(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.5
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.7
 ):
 
     # parse predictions
