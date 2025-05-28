@@ -265,6 +265,7 @@ def save_colorized_mesh(mesh, labels_mapped, output_file, labelMode=True):
             [1, 0, 1],  # "column",
             [1, 0, 0],  # "board",
             [0.5, 0, 1],  # "clutter",
+            [1, 1, 1],  # "inactivate",
         ]
     )
     unique_labels = np.unique(labels_mapped)
