@@ -536,9 +536,9 @@ class InstanceSegmentation(pl.LightningModule):
         )
 
         if self.config.general.topk_per_image != -1:
-            scores_per_query, topk_indices = mask_cls.flatten(0, 1).topk(
-                self.config.general.topk_per_image, sorted=True
-            )
+            flat_scores = mask_cls.flatten(0, 1)
+            topk = min(self.config.general.topk_per_image, flat_scores.shape[0])
+            scores_per_query, topk_indices = flat_scores.topk(topk, sorted=True)
         else:
             scores_per_query, topk_indices = mask_cls.flatten(0, 1).topk(
                 num_queries, sorted=True
@@ -648,8 +648,8 @@ class InstanceSegmentation(pl.LightningModule):
                                             bid, curr_query
                                         ]
                                     )
-                    print("pred logits",new_preds["pred_logits"])
-                    print("pred masks",new_preds["pred_masks"])
+                    # print("pred logits",new_preds["pred_logits"])
+                    # print("pred masks",new_preds["pred_masks"])
                     if new_preds["pred_logits"] and new_preds["pred_masks"]:
                         scores, masks, classes, heatmap = self.get_mask_and_scores(
                             torch.stack(new_preds["pred_logits"]).cpu(),
