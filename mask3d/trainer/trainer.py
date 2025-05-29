@@ -649,7 +649,7 @@ class InstanceSegmentation(pl.LightningModule):
                                         ]
                                     )
                     # print("pred logits",new_preds["pred_logits"])
-                    if new_preds["pred_logits"]:
+                    if new_preds["pred_logits"] and new_preds["pred_masks"]:
                         scores, masks, classes, heatmap = self.get_mask_and_scores(
                             torch.stack(new_preds["pred_logits"]).cpu(),
                             torch.stack(new_preds["pred_masks"]).T,
