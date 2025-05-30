@@ -10,7 +10,7 @@ import torch
 import os
 
 print("getting model")
-model = get_model("checkpoints/last-epoch230its.ckpt", "s3dis")
+model = get_model("checkpoints/last-epoch530its.ckpt", "s3dis")
 model.eval()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
