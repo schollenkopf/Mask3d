@@ -64,15 +64,15 @@ pip install pytorch-lightning==1.7.2
 pip install .
 
 #pip install typing_extensions==4.11.0
-python infere.py
+# python infere.py
 
 
-# cd mask3d
+cd mask3d
 
-# CURR_AREA=2  # set the area number accordingly [1,6] seems like its just validated on this and trained on another
-# CURR_DBSCAN=0.6
-# CURR_TOPK=-1
-# CURR_QUERY=50
+CURR_AREA=2  # set the area number accordingly [1,6] seems like its just validated on this and trained on another
+CURR_DBSCAN=0.6
+CURR_TOPK=-1
+CURR_QUERY=50
 
 
 
@@ -83,15 +83,15 @@ python infere.py
 #     --save_dir="data/processed/s3dis"
 
 
-# python main_instance_segmentation.py \
-#   general.project_name="s3dis" \
-#   general.experiment_name="area${CURR_AREA}_from_scratch" \
-#   data.batch_size=16 \
-#   data/datasets=s3dis \
-#   general.num_targets=5 \
-#   trainer.max_epochs=300 \
-#   general.checkpoint=../checkpoints/last-epoch230its.ckpt \
-#   data.num_labels=4 \
-#   general.area=${CURR_AREA} \
-#   model.num_queries=${CURR_QUERY} \
-#   trainer.check_val_every_n_epoch=15 \
+python main_instance_segmentation.py \
+  general.project_name="s3dis" \
+  general.experiment_name="area${CURR_AREA}_from_scratch" \
+  data.batch_size=16 \
+  data/datasets=s3dis \
+  general.num_targets=5 \
+  trainer.max_epochs=300 \
+  general.checkpoint=../checkpoints/last-epoch530its.ckpt \
+  data.num_labels=4 \
+  general.area=${CURR_AREA} \
+  model.num_queries=${CURR_QUERY} \
+  trainer.check_val_every_n_epoch=15 \
