@@ -28,14 +28,14 @@ for i, filename in enumerate(os.listdir("scans/")):
 
     with torch.no_grad():
         outputs = model(data, raw_coordinates=raw_coordinates)
+    torch.save(outputs,"output_"+ os.path.splitext(filename)[0] + ".pt")
+    # labels, instances = map_output_to_pointcloud(mesh, outputs, inverse_map)
 
-    labels, instances = map_output_to_pointcloud(mesh, outputs, inverse_map)
-
-    save_path_instance = os.path.join(
-        "scans/", "instance_" + os.path.splitext(filename)[0] + ".ply"
-    )
-    save_colorized_mesh(mesh, instances, save_path_instance, labelMode=False)
-    save_path_label = os.path.join(
-        "scans/", "labeled_" + os.path.splitext(filename)[0] + ".ply"
-    )
-    save_colorized_mesh(mesh, labels, save_path_label)
+    # save_path_instance = os.path.join(
+    #     "scans/", "instance_" + os.path.splitext(filename)[0] + ".ply"
+    # )
+    # save_colorized_mesh(mesh, instances, save_path_instance, labelMode=False)
+    # save_path_label = os.path.join(
+    #     "scans/", "labeled_" + os.path.splitext(filename)[0] + ".ply"
+    # )
+    # save_colorized_mesh(mesh, labels, save_path_label)
