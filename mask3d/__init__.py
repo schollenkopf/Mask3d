@@ -203,26 +203,26 @@ def map_output_to_pointcloud(
         print(l)
 
         if l < 200 and c > confidence_threshold:
-            # full_res_mask = m[inverse_map]
-            # masked_coords = np.asarray(mesh.vertices)[full_res_mask]
+            full_res_mask = m[inverse_map]
+            masked_coords = np.asarray(mesh.vertices)[full_res_mask]
 
-            # if len(masked_coords) == 0:
-            #     continue
+            if len(masked_coords) == 0:
+                continue
 
-            # # Apply DBSCAN
-            # db = DBSCAN(eps=0.95, min_samples=1).fit(masked_coords)
-            # cluster_labels = db.labels_
+            # Apply DBSCAN
+            db = DBSCAN(eps=0.95, min_samples=1).fit(masked_coords)
+            cluster_labels = db.labels_
 
-            # for cluster_id in np.unique(cluster_labels):
-            #     if cluster_id == -1 or cluster_id == 13:
-            #         continue  # skip noise
+            for cluster_id in np.unique(cluster_labels):
+                if cluster_id == -1 or cluster_id == 13:
+                    continue  # skip noise
 
-            #     cluster_mask = cluster_labels == cluster_id
-            #     cluster_indices = np.where(full_res_mask)[0][cluster_mask]
+                cluster_mask = cluster_labels == cluster_id
+                cluster_indices = np.where(full_res_mask)[0][cluster_mask]
 
-            #     # Create binary mask for this cluster
-            #     instance_mask = torch.zeros(len(mesh.vertices), dtype=torch.bool)
-            #     instance_mask[cluster_indices] = True
+                # Create binary mask for this cluster
+                instance_mask = torch.zeros(len(mesh.vertices), dtype=torch.bool)
+                instance_mask[cluster_indices] = True
 
             labels.append(int(l.item()))
             confidences.append(float(c.item()))
