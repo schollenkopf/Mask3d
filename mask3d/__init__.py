@@ -174,6 +174,48 @@ def prepare_data(mesh, device):
         inverse_map,
     )
 
+def get_lists(
+    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.9
+):
+
+    # parse predictions
+    logits = outputs["pred_logits"]
+    masks = outputs["pred_masks"]
+
+    # reformat predictions
+    logits = logits[0].detach().cpu()
+    masks = masks[0].detach().cpu()
+    labels = []
+    confidences = []
+    instance_masks = []
+    for i in range(len(logits)):
+        p_labels = torch.softmax(logits[i], dim=-1)
+        p_masks = torch.sigmoid(masks[:, i])
+        l = torch.argmax(p_labels, dim=-1)
+        c_label = torch.max(p_labels)
+        m = p_masks > 0.5
+        c_m = p_masks[m].sum() / (m.sum() + 1e-8)
+        c = c_label * c_m
+        if l < 200: # and c > confidence_threshold:
+            labels.append(int(l.item()))
+            confidences.append(float(c.item()))
+            instance_masks.append(m[inverse_map])
+    
+    instances_mapped_list = []
+    labels_mapped_list = []
+    
+    instance_id = 1 
+    for i, (c,l, m) in enumerate(zip(confidences, labels, instance_masks)):
+        labels_mapped = np.zeros((len(mesh.vertices), 1))
+        instances_mapped = np.zeros((len(mesh.vertices), 1))
+        instances_mapped[m == 1] = instance_id
+        labels_mapped[m == 1] = l
+        instances_mapped_list.append(instances_mapped)
+        labels_mapped_list.append(labels_mapped)
+        instance_id += 1
+
+    return confidences, instances_mapped_list, labels_mapped_list
+
 
 def map_output_to_pointcloud(
     mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.9
@@ -200,9 +242,8 @@ def map_output_to_pointcloud(
         c_m = p_masks[m].sum() / (m.sum() + 1e-8)
         c = c_label * c_m
 
-        print(l)
 
-        if l < 200 and c > confidence_threshold:
+        if l < 200  and c > confidence_threshold:
             # full_res_mask = m[inverse_map]
             # masked_coords = np.asarray(mesh.vertices)[full_res_mask]
 
@@ -227,10 +268,7 @@ def map_output_to_pointcloud(
             labels.append(int(l.item()))
             confidences.append(float(c.item()))
             instance_masks.append(m[inverse_map])
-    # save labelled mesh
-    # mesh_labelled = o3d.geometry.TriangleMesh()
-    # mesh_labelled.vertices = mesh.vertices
-    # mesh_labelled.triangles = mesh.triangles
+
 
     labels_mapped = np.zeros((len(mesh.vertices), 1))
     instances_mapped = np.zeros((len(mesh.vertices), 1))

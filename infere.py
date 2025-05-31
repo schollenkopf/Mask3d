@@ -5,10 +5,11 @@ from mask3d import (
     prepare_data,
     map_output_to_pointcloud,
     save_colorized_mesh,
+    get_lists,
 )
 import torch
 import os
-
+import numpy as np
 print("getting model")
 model = get_model("checkpoints/last-epoch830its.ckpt", "s3dis")
 model.eval()
@@ -28,7 +29,13 @@ for i, filename in enumerate(os.listdir("scans/")):
 
     with torch.no_grad():
         outputs = model(data, raw_coordinates=raw_coordinates)
-    torch.save(outputs,"output_"+ os.path.splitext(filename)[0] + ".pt")
+    confidences, instances_mapped_list, labels_mapped_list = get_lists(mesh,outputs,inverse_map)
+
+    np.save("scans/confidences_"+os.path.splitext(filename)[0]+".npy",np.array(confidences,dytpe=object),allow_pickle=True)
+    np.save("scans/instances_"+os.path.splitext(filename)[0]+".npy",np.array(instances_mapped_list,dytpe=object),allow_pickle=True)
+    np.save("scans/labels_"+os.path.splitext(filename)[0]+".npy",np.array(labels_mapped_list,dytpe=object),allow_pickle=True)
+
+
     # labels, instances = map_output_to_pointcloud(mesh, outputs, inverse_map)
 
     # save_path_instance = os.path.join(
