@@ -205,14 +205,18 @@ def get_lists(
     final_labels = np.zeros((len(mesh.vertices), 1))
     foundLadder = False
     instance_id = 1 
+    
     for (conf,label, m) in sorted(
             zip(confidences, labels, instance_masks),
             key=lambda x: (x[0], x[1]),
             reverse=True,
         ):
+
+
+
         if int(label) == 1 and conf > 0.85:
             pass
-        elif int(label) == 2 and not foundLadder and conf > 0.75:
+        elif int(label) == 2 and not foundLadder and conf > 0.7:
             foundLadder = True
             pass
         elif int(label)!=4 and conf > 0.85:
@@ -222,7 +226,7 @@ def get_lists(
         final_instances[m == 1] = instance_id
         final_labels[m == 1] = label + 1
         instance_id += 1
-
+    
     return final_instances, final_labels
 
 
