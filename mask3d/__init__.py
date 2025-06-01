@@ -201,8 +201,8 @@ def get_lists(
             confidences.append(float(c.item()))
             instance_masks.append(m[inverse_map])
     
-    final_instances = np.zeros((len(mesh.vertices), 1))
-    final_labels = np.zeros((len(mesh.vertices), 1))
+    final_instances = np.zeros(len(mesh.vertices))
+    final_labels = np.zeros(len(mesh.vertices))
     
     instance_id = 1 
     for (conf,label, m) in sorted(
@@ -219,8 +219,8 @@ def get_lists(
             pass
         else:
             continue
-        final_instances[m == 1] = instance_id
-        final_labels[m == 1] = label + 1
+        final_instances[m[:, 0] != 0] = instance_id
+        final_labels[m[:, 0] != 0] = label + 1
         instance_id += 1
 
     return final_instances, final_labels
