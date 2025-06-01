@@ -175,7 +175,7 @@ def prepare_data(mesh, device):
     )
 
 def get_lists(
-    mesh, outputs, inverse_map, label_space="scannet200", confidence_threshold=0.9
+    mesh, outputs, inverse_map
 ):
 
     # parse predictions
@@ -210,12 +210,12 @@ def get_lists(
             key=lambda x: (x[0], x[1]),
             reverse=True,
         ):
-        if int(label) == 1 and conf > 0.9:
+        if int(label) == 1 and conf > 0.85:
             pass
-        elif int(label) == 2 and not foundLadder and conf > 0.8:
-            pass
+        elif int(label) == 2 and not foundLadder and conf > 0.75:
             foundLadder = True
-        elif int(label)!=4 and conf > 0.9:
+            pass
+        elif int(label)!=4 and conf > 0.85:
             pass
         else:
             continue
