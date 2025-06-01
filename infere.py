@@ -29,11 +29,10 @@ for i, filename in enumerate(os.listdir("scans/")):
 
     with torch.no_grad():
         outputs = model(data, raw_coordinates=raw_coordinates)
-    confidences, instances_mapped_list, labels_mapped_list = get_lists(mesh,outputs,inverse_map)
+    final_instances, final_labels = get_lists(mesh,outputs,inverse_map)
 
-    np.save("scans/confidences_"+os.path.splitext(filename)[0]+".npy",np.array(confidences),allow_pickle=True)
-    np.save("scans/instances_"+os.path.splitext(filename)[0]+".npy",np.array(instances_mapped_list),allow_pickle=True)
-    np.save("scans/labels_"+os.path.splitext(filename)[0]+".npy",np.array(labels_mapped_list),allow_pickle=True)
+    np.save("scans/instances_"+os.path.splitext(filename)[0]+".npy",np.array(final_instances),allow_pickle=True)
+    np.save("scans/labels_"+os.path.splitext(filename)[0]+".npy",np.array(final_labels),allow_pickle=True)
 
 
     # labels, instances = map_output_to_pointcloud(mesh, outputs, inverse_map)

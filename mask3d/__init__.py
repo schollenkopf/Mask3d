@@ -201,20 +201,29 @@ def get_lists(
             confidences.append(float(c.item()))
             instance_masks.append(m[inverse_map])
     
-    instances_mapped_list = []
-    labels_mapped_list = []
+    final_instances = np.zeros((len(mesh.vertices), 1))
+    final_labels = np.zeros((len(mesh.vertices), 1))
     
     instance_id = 1 
-    for i, (c,l, m) in enumerate(zip(confidences, labels, instance_masks)):
-        labels_mapped = np.zeros((len(mesh.vertices), 1))
-        instances_mapped = np.zeros((len(mesh.vertices), 1))
-        instances_mapped[m == 1] = instance_id
-        labels_mapped[m == 1] = l
-        instances_mapped_list.append(instances_mapped)
-        labels_mapped_list.append(labels_mapped)
+    for (conf,label, m) in sorted(
+            zip(confidences, labels, masks),
+            key=lambda x: (x[0], x[1]),
+            reverse=True,
+        ):
+        if int(label) == 1 and conf > 0.9:
+            pass
+        elif int(label) == 2 and not foundLadder and conf > 0.8:
+            pass
+            foundLadder = True
+        elif int(label)!=4 and conf > 0.9:
+            pass
+        else:
+            continue
+        final_instances[m == 1] = instance_id
+        final_labels[m == 1] = label + 1
         instance_id += 1
 
-    return confidences, instances_mapped_list, labels_mapped_list
+    return final_instances, final_labels
 
 
 def map_output_to_pointcloud(
