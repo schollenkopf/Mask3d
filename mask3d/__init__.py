@@ -203,7 +203,7 @@ def get_lists(
     
     final_instances = np.zeros((len(mesh.vertices), 1))
     final_labels = np.zeros((len(mesh.vertices), 1))
-    
+    foundLadder = False
     instance_id = 1 
     for (conf,label, m) in sorted(
             zip(confidences, labels, instance_masks),
